@@ -79,7 +79,7 @@ public class Vision{
 			Core.inRange(hsv, lower, upper, hsv);
 
 			//TODO Maybe blur the image before looking for contours
-			Imgproc.findContours(hsv, contours, hierarcy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 			Imgproc.drawContours(hsv, contours, -1, contourColor);
 			
 			//Put modified cv image on cv source to be streamed
