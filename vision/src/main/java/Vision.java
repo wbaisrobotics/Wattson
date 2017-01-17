@@ -4,6 +4,7 @@ import edu.wpi.cscore.*;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import java.util.List;
+import java.util.ArrayList;
 
 public class Vision{
 	private NetworkTable sd;
@@ -62,7 +63,7 @@ public class Vision{
 		Scalar lower = new Scalar(110, 50, 50);
 		Scalar upper = new Scalar(130, 255, 255);
 
-		List<MatOfPoint> contours = new List<MatOfPoint>();
+		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Mat hierarchy = new Mat();
 		Scalar contourColor = new Scalar(110, 255, 255);
 		
