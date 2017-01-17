@@ -63,7 +63,7 @@ public class Vision{
 		Scalar lower = new Scalar(110, 50, 50);
 		Scalar upper = new Scalar(130, 255, 255);
 
-		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Mat hierarchy = new Mat();
 		Scalar contourColor = new Scalar(110, 255, 255);
 
@@ -85,10 +85,12 @@ public class Vision{
 			Imgproc.blur(hsv, hsv, new Size(5, 5));
 			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 			Imgproc.drawContours(hsv, contours, -1, contourColor);
-
+			
 			//Draw bounding rectangle for largest contour
-			Rect rect = findLargestContour(contours);
-			Imgproc.rectangle(hsv, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), contourColor);
+			if(contours.size() > 0){
+				Rect rect = findLargestContour(contours);
+				Imgproc.rectangle(hsv, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), contourColor);
+			}
 			
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
