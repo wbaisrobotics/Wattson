@@ -1,6 +1,14 @@
+# vision code output
 vision/.gradle/
 vision/build/
 vision/output/
+
+# Robot code output
+bin/
+build/
+dist/
+build.properties
+build.xml
 
 *.class
 
@@ -8,6 +16,7 @@ vision/output/
 .mtj.tmp/
 
 # Package Files #
+#*.jar
 *.war
 *.ear
 
