@@ -3,6 +3,7 @@ import edu.wpi.first.wpilibj.tables.*;
 import edu.wpi.cscore.*;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
+import java.util.List;
 
 public class Vision{
 	private NetworkTable sd;
@@ -78,7 +79,7 @@ public class Vision{
 
 			//TODO Maybe blur the image before looking for contours
 			Imgproc.findContours(hsv, contours, hierarcy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-			Improc.drawContours(hsv, contours, -1, contourColor);
+			Imgroc.drawContours(hsv, contours, -1, contourColor);
 			
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
