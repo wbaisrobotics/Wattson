@@ -1,7 +1,7 @@
 import edu.wpi.first.wpilibj.networktables.*;
 import edu.wpi.first.wpilibj.tables.*;
 import edu.wpi.cscore.*;
-import org.opencv.core.Mat;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 public class Vision{
@@ -56,6 +56,14 @@ public class Vision{
 		// as they are expensive to create
 		Mat frame = new Mat();
 		Mat hsv = new Mat();
+
+		//Range to filter
+		Scalar lower = new Scalar(110, 50, 50);
+		Scalar upper = new Scalar(130, 255, 255);
+
+		List<MatOfPoint> contours = new List<MatOfPoint>();
+		Mat hierarchy = new Mat();
+		Scalar contourColor = new Scalar(110, 255, 255);
 		
 		while(true){
 			// Grab a frame. If it has a frame time of 0, there was an error.
@@ -63,13 +71,16 @@ public class Vision{
 			long frameTime = cvSink.grabFrame(frame);
 			if (frameTime == 0) continue;
 			
-			// Below is where you would do your OpenCV operations on the provided image
-			// The sample below just changes color source to HSV
+			//Convert to HSV for easier filtering
 			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
+			//Filter image by color
+			Core.inRange(hsv, lower, upper, hsv);
+
+			//TODO Maybe blur the image before looking for contours
+			Imgproc.findContours(hsv, contours, hierarcy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+			Improc.drawContours(hsv, contours, -1, contourColor);
 			
-			// Here is where you would write a processed image that you want to restreams
-			// This will most likely be a marked up image of what the camera sees
-			// For now, we are just going to stream the HSV image
+			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
 		}
 	}
