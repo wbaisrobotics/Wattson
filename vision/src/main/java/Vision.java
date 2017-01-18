@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class Vision{
 	private NetworkTable sd;
+	private double adjustValue; //- for left, 0 on, + for right
 
 	private UsbCamera camera;
 
@@ -63,11 +64,15 @@ public class Vision{
 		Scalar lower = new Scalar(110, 50, 50);
 		Scalar upper = new Scalar(130, 255, 255);
 
+		//Kernel size to blur with
+		Size blurAmount = new Size(5, 5);
+
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Mat hierarchy = new Mat();
 		Scalar contourColor = new Scalar(110, 255, 255);
 
-
+		Rect target;
+		Scalar targetColor = new Scalar(65, 255, 65);
 		
 		while(true){
 			// Grab a frame. If it has a frame time of 0, there was an error.
@@ -80,20 +85,25 @@ public class Vision{
 			//Filter image by color
 			Core.inRange(hsv, lower, upper, hsv);
 
-			//Find and draw contours
+			//Clear contours list
 			contours.clear();
-			Imgproc.blur(hsv, hsv, new Size(5, 5));
+			//Blur frame to omit extra noise
+			Imgproc.blur(hsv, hsv, blurAmount);
+			//Find contours
 			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 			Imgproc.drawContours(hsv, contours, -1, contourColor);
 			
-			//Draw bounding rectangle for largest contour
+			//Get/Draw bounding rectangle for largest contour
 			if(contours.size() > 0){
-				Rect rect = findLargestContour(contours);
-				Imgproc.rectangle(hsv, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), contourColor);
+				target = findLargestContour(contours);
+				Imgproc.rectangle(hsv, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), targetColor);
 			}
 			
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
+
+			//Update network table
+			sd.putNumber("adjustValue", adjustValue);
 		}
 	}
 
