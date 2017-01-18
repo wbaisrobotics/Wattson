@@ -96,7 +96,7 @@ public class Vision{
 			//Get/Draw bounding rectangle for largest contour
 			if(contours.size() > 0){
 				target = findLargestContour(contours);
-				Imgproc.rectangle(hsv, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), targetColor);
+				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 			}
 			
 			//Put modified cv image on cv source to be streamed
