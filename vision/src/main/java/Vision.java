@@ -69,11 +69,10 @@ public class Vision{
 
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Mat hierarchy = new Mat();
-		Scalar contourColor = new Scalar(110, 255, 255);
 
+		int largestContour;
 		Rect target;
-		Scalar targetColor = new Scalar(65, 255, 65);
-		
+
 		while(true){
 			// Grab a frame. If it has a frame time of 0, there was an error.
 			// Just skip and continue
@@ -91,12 +90,12 @@ public class Vision{
 			Imgproc.blur(hsv, hsv, blurAmount);
 			//Find contours
 			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-			Imgproc.drawContours(hsv, contours, -1, contourColor);
-			
-			//Get/Draw bounding rectangle for largest contour
+			//Draw largest contour
 			if(contours.size() > 0){
-				target = findLargestContour(contours);
-				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+				largestContour = findLargestContour(contours);
+				target = Imgproc.boundingRect(contours.get(largestContour));
+				Imgproc.drawContours(hsv, contours, largestContour, new Scalar(110, 255, 255));
+				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), new Scalar(255, 255, 255));
 			}
 			
 			//Put modified cv image on cv source to be streamed
@@ -107,7 +106,7 @@ public class Vision{
 		}
 	}
 
-	private Rect findLargestContour(ArrayList<MatOfPoint> contours){
+	private int findLargestContour(ArrayList<MatOfPoint> contours){
 		double largestArea = Imgproc.contourArea(contours.get(0));
 		int largestIndex = 0;
 
@@ -119,7 +118,7 @@ public class Vision{
 			}
 		}
 
-		return Imgproc.boundingRect(contours.get(largestIndex));
+		return largestIndex;
 	}
 
 	public static void main(String[] args){
