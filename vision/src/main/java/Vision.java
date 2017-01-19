@@ -91,19 +91,20 @@ public class Vision{
 			Imgproc.blur(hsv, hsv, blurAmount);
 			//Find contours
 			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-			Imgproc.drawContours(hsv, contours, -1, contourColor);
 
 			//Find largest contour
 			if(contours.size() > 0){
 				target = findLargestContour(contours);
+				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+				
+				adjustValue = (target.x + target.width / 2) - 320;
+				//Update network table
+				sd.putNumber("adjustValue", adjustValue);
 			}
 			
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
-
-			//Update network table
-			sd.putNumber("adjustValue", adjustValue);
 		}
 	}
 
