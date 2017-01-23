@@ -32,7 +32,6 @@ public class Vision{
 		NetworkTable.setClientMode();
 		// Set your team number here
 		NetworkTable.setTeam(4338);
-		NetworkTable.initialize();
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
 		
