@@ -6,6 +6,17 @@ import org.opencv.imgproc.Imgproc;
 import java.util.List;
 import java.util.ArrayList;
 
+/*
+
+  |\      _,,,,--,,_
+  /,`.-'`'    -,  ;-;,
+ |,4-  ) ),,__ ) /;  ;;		Code cat is tired
+'---''(.'--'  (.'`.) `'
+
+~meow
+
+*/
+
 public class Vision{
 	private NetworkTable sd;
 	private double adjustValue; //- for left, 0 on, + for right
