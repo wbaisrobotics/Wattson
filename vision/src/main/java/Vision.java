@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
   |\      _,,,,--,,_
   /,`.-'`'    -,  ;-;,
- |,4-  ) ),,__ ) /;  ;;		Code cat is tired
+ |,4-  ) ),,__ ) /;  ;;  Code cat is tired
 '---''(.'--'  (.'`.) `'
 
 ~meow
