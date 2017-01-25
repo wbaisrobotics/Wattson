@@ -32,6 +32,6 @@ public class LogisticMotorSpeedController{
 	}
 
 	public double getCurrentSpeed(double currentTime){
-		return speed / (1f + Math.pow(Math.E, -k(currentTime - offset)));
+		return speed / (1f + Math.pow(Math.E, -k * (currentTime - offset)));
 	}
 }
