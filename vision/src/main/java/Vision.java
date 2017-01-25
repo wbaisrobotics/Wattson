@@ -67,7 +67,15 @@ public class Vision{
 		cvStream.setSource(cvSource);
 	}
 
-	public void process(){
+	public void processBoiler(){
+		
+	}
+
+	public void processGear(){
+
+	}
+
+	public void processTest(){
 		// All Mats and Lists should be stored outside the loop to avoid allocations
 		// as they are expensive to create
 		Mat frame = new Mat();
@@ -138,6 +146,6 @@ public class Vision{
 
 	public static void main(String[] args){
 		Vision vision = new Vision();
-		vision.process();
+		vision.processTest();
 	}
 }
