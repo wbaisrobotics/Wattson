@@ -1,7 +1,8 @@
+package main.java;
+
 import edu.wpi.first.wpilibj.networktables.*;
 import edu.wpi.first.wpilibj.tables.*;
 import edu.wpi.cscore.*;
-package main.java;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
