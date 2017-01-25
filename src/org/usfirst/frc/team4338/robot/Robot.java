@@ -17,6 +17,9 @@ public class Robot extends IterativeRobot {
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
 
+	public final double PERIODIC_DELAY = 0.005f;
+	private RobotDrive drive;
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -26,6 +29,9 @@ public class Robot extends IterativeRobot {
 		chooser.addDefault("Default Auto", defaultAuto);
 		chooser.addObject("My Auto", customAuto);
 		SmartDashboard.putData("Auto choices", chooser);
+
+		drive = new RobotDrive(0, 1);
+		drive.setExpiration(0.1f);
 	}
 
 	/**
@@ -68,6 +74,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		Timer.delay(PERIODIC_DELAY);
 	}
 
 	/**
