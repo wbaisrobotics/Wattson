@@ -20,6 +20,8 @@ public class Robot extends IterativeRobot {
 	public final double PERIODIC_DELAY = 0.005f;
 	private RobotDrive drive;
 
+	private Compressor compressor;
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -32,6 +34,9 @@ public class Robot extends IterativeRobot {
 
 		drive = new RobotDrive(0, 1);
 		drive.setExpiration(0.1f);
+
+		compressor = new Compressor(0);
+		compressor.setClosedLoopControl(true);
 	}
 
 	/**
