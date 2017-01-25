@@ -113,7 +113,7 @@ public class Robot extends IterativeRobot {
 		}
 		drive.tankDrive(test.getCurrentSpeed(timer.get()), -test.getCurrentSpeed(timer.get()));
 
-		timer.delay(PERIODIC_DELAY);
+		Timer.delay(PERIODIC_DELAY);
 	}
 
 	/**
