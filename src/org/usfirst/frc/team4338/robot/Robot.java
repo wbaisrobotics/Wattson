@@ -3,6 +3,10 @@ package org.usfirst.frc.team4338.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,7 +22,7 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> chooser = new SendableChooser<>();
 
 	public final double PERIODIC_DELAY = 0.005f;
-	
+
 	private RobotDrive drive;
 
 	private Compressor compressor;
