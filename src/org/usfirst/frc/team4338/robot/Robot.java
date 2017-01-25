@@ -22,8 +22,12 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> chooser = new SendableChooser<>();
 
 	public final double PERIODIC_DELAY = 0.005f;
+	private Timer timer;
+
+	private Controller controller;
 
 	private RobotDrive drive;
+	private LogisticMotorSpeedController test;
 
 	private Compressor compressor;
 	private DoubleSolenoid leftGearShifter;
@@ -39,8 +43,13 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("My Auto", customAuto);
 		SmartDashboard.putData("Auto choices", chooser);
 
+		timer = new Timer();
+
+		controller = new Controller(0);
+
 		drive = new RobotDrive(0, 1);
 		drive.setExpiration(0.1f);
+		test = new LogisticMotorSpeedController();
 
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
@@ -83,12 +92,28 @@ public class Robot extends IterativeRobot {
 		}
 	}
 
+	@Override
+	public void teleopInit(){
+		test.set(0f, 1f);
+	}
+
 	/**
 	 * This function is called periodically during operator control
 	 */
 	@Override
 	public void teleopPeriodic() {
-		Timer.delay(PERIODIC_DELAY);
+		leftGearShifter.set(DoubleSolenoid.Value.kForward);
+		rightGearShifter.set(DoubleSolenoid.Value.kForward);
+
+		if(controller.getButtonA()){
+			test.set(0.7f, 1f);
+			timer.stop();
+			timer.reset();
+			timer.start();
+		}
+		drive.tankDrive(test.getCurrentSpeed(timer.get()), -test.getCurrentSpeed(timer.get()));
+
+		timer.delay(PERIODIC_DELAY);
 	}
 
 	/**

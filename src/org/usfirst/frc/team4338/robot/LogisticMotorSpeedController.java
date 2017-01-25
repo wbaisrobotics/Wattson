@@ -12,12 +12,20 @@ package org.usfirst.frc.team4338.robot;
 */
 
 public class LogisticMotorSpeedContoller{
-	private double speed = 1f;
-	private double time = 1f;
-	private double k = 10f;
-	private double offset = 5f;
+	private double speed;
+	private double time;
+	private double k;
+	private double offset;
 
-	public void setTime(double time){
+	public LogisticMotorSpeedContoller(){
+		speed = 1f;
+		time = 1f;
+		k = 10f;
+		offset = 5f;
+	}
+
+	public void set(double speed, double time){
+		this.speed = speed;
 		this.time = time;
 		k = 10f / time;
 		offset = time / 2f;
@@ -25,9 +33,5 @@ public class LogisticMotorSpeedContoller{
 
 	public double getCurrentSpeed(double currentTime){
 		return speed / (1f + Math.pow(Math.E, -k(currentTime - offset)));
-	}
-
-	public double getTime(){
-		return time;
 	}
 }
