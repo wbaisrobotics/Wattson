@@ -11,7 +11,7 @@ package org.usfirst.frc.team4338.robot;
 	k and p are based on the desired time to reach a speed
 */
 
-public class LogisticMotorSpeedContoller{
+public class LogisticMotorSpeedController{
 	private double speed;
 	private double time;
 	private double k;
