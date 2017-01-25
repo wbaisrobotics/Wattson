@@ -17,7 +17,7 @@ public class LogisticMotorSpeedController{
 	private double k;
 	private double offset;
 
-	public LogisticMotorSpeedContoller(){
+	public LogisticMotorSpeedController(){
 		speed = 1f;
 		time = 1f;
 		k = 10f;
