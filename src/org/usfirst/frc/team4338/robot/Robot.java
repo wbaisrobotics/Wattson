@@ -82,13 +82,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		switch (autoSelected) {
-		case customAuto:
-			// Put custom auto code here
-			break;
-		case defaultAuto:
-		default:
-			// Put default auto code here
-			break;
+			case customAuto: //Custom autonomous program
+				break;
+			case defaultAuto: //Default autonomous program
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -102,8 +101,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		leftGearShifter.set(DoubleSolenoid.Value.kForward);
-		rightGearShifter.set(DoubleSolenoid.Value.kForward);
+		shiftLow();
 
 		if(controller.getButtonA()){
 			test.set(0.7f, 1f);
@@ -121,6 +119,16 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+	}
+
+	public void shiftLow(){
+		leftGearShifter.set(DoubleSolenoid.Value.kForward);
+		rightGearShifter.set(DoubleSolenoid.Value.kForward);
+	}
+
+	public void shiftHigh(){
+		leftGearShifter.set(DoubleSolenoid.Value.kReverse);
+		rightGearShifter.set(DoubleSolenoid.Value.kReverse);
 	}
 }
 
