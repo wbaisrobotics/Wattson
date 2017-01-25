@@ -67,12 +67,60 @@ public class Vision{
 		cvStream.setSource(cvSource);
 	}
 
+	//TODO work on identifying targets not just the largest contour
+	//http://wpilib.screenstepslive.com/s/4485/m/24194/l/288985-identifying-and-processing-the-targets
 	public void processBoiler(){
-		
+		Mat frame = new Mat();
+		Mat hsv = new Mat();
+
+		//Range to filter
+		Scalar lower = new Scalar(110, 50, 50);
+		Scalar upper = new Scalar(130, 255, 255);
+
+		//Kernel size to blur with
+		Size blurAmount = new Size(5, 5);
+
+		Mat hierarchy = new Mat();
+		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+		Scalar contourColor = new Scalar(110, 255, 255);
+		Rect target;
+		Scalar targetColor = new Scalar(255, 255, 255);
+
+		while(true){
+			// Grab a frame. If it has a frame time of 0, there was an error.
+			// Just skip and continue
+			long frameTime = cvSink.grabFrame(frame);
+			if(frameTime == 0) continue;
+
+			//Convert to HSV for easier filtering
+			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
+			//Filter image by color
+			Core.inRange(hsv, lower, upper, hsv);
+
+			//Clear contours list
+			contours.clear();
+			//Blur frame to omit extra noise
+			Imgproc.blur(hsv, hsv, blurAmount);
+			//Find contours
+			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+			//TODO identify boiler target (the two strips of tape)
+			//Find largest contour
+			if(contours.size() > 0){
+				target = findLargestContour(contours);
+				Imgproc.drawContours(hsv, contours, -1, contourColor);
+				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+				//TODO relay target information to networktable
+			}
+
+			//Put modified cv image on cv source to be streamed
+			cvSource.putFrame(hsv);
+		}
 	}
 
 	public void processGear(){
-
+		Mat frame = new Mat();
+		Mat hsv = new Mat();
 	}
 
 	public void processTest(){
