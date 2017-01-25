@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.usfirst.frc.team4338.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;

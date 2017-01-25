@@ -1,3 +1,5 @@
+package org.usfirst.frc.team4338.robot;
+
 /*
 	models a motor speed on the following equation:
 
