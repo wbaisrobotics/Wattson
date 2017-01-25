@@ -18,9 +18,12 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> chooser = new SendableChooser<>();
 
 	public final double PERIODIC_DELAY = 0.005f;
+	
 	private RobotDrive drive;
 
 	private Compressor compressor;
+	private DoubleSolenoid leftGearShifter;
+	private DoubleSolenoid rightGearShifter;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -37,6 +40,8 @@ public class Robot extends IterativeRobot {
 
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
+		leftGearShifter = new DoubleSolenoid(0, 1);
+		rightGearShifter = new DoubleSolenoid(2, 3);
 	}
 
 	/**
