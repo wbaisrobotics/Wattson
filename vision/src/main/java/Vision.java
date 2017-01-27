@@ -23,6 +23,9 @@ public class Vision{
 	private double adjustValue; //- for left, 0 on, + for right
 
 	private UsbCamera camera;
+	private int width = 640;
+	private int height = 480;
+	private int fps = 30;
 
 	// This is the network port you want to stream the raw and cv images to
 	// By rules, must be between 1180 and 1190
@@ -50,13 +53,13 @@ public class Vision{
 		//Initialize Camera
 		camera = new UsbCamera("CoprocessorCamera", 0);
 		camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
-		camera.setResolution(640, 480);
-		camera.setFPS(30);
+		camera.setResolution(width, height);
+		camera.setFPS(fps);
 		
 		//Initialize cv sink and source
 		cvSink = new CvSink("CV Image Grabber");
 		cvSink.setSource(camera);
-		cvSource = new CvSource("CV Image Source", VideoMode.PixelFormat.kMJPEG, 640, 480, 30);
+		cvSource = new CvSource("CV Image Source", VideoMode.PixelFormat.kMJPEG, width, height, fps);
 		
 		//Initialize streams
 		rawStream = new MjpegServer("Raw Server", rawStreamPort);
@@ -116,10 +119,14 @@ public class Vision{
 			//TODO identify boiler target (the two strips of tape)
 			//Find largest contour
 			if(contours.size() > 0){
-				target = findLargestContour(contours);
+				sortContours(contours); //Merge sort the contours
+				target = Improc.boundingRect(contours.get(0));
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
-				//TODO relay target information to networktable
+				
+				adjustValue = (target.x + target.width / 2) - width / 2;
+				//Update network table
+				sd.putNumber("adjustValue", adjustValue);
 			}
 
 			//Put modified cv image on cv source to be streamed
@@ -176,13 +183,62 @@ public class Vision{
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 				
-				adjustValue = (target.x + target.width / 2) - 320;
+				adjustValue = (target.x + target.width / 2) - width / 2;
 				//Update network table
 				sd.putNumber("adjustValue", adjustValue);
 			}
 			
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
+		}
+	}
+
+	private void sortContours(ArrayList<MatOfPoint> list, int first, int last){
+		if(first == last){
+		} else if(last - first == 1){
+			if(list.get(last) > list.get(first)){ //Put greatest value first for greatest to least
+				int temp = list.get(first);
+				list.set(first, last);
+				list.set(last, temp);
+			}
+		} else{
+			int mid = (first + last) / 2;
+			sortContours(list, first, mid);
+			sortContours(list, mid + 1, last);
+			sortedList = merge(list, first, mid, last);
+		}
+	}
+
+	private void merge(ArrayList<MatOfPoint> list, int first, int mid, int last){
+		ArrayList<MatOfPoint> mergedList = new ArrayList<MatOfPoint>();
+		int pointerA = first;
+		int pointerB = mid + 1;
+
+		for(int i = 0; i < last - first + 1; i++){
+			if(aDone){
+				mergedList.add(list.get(pointerB));
+				pointerB++;
+			} else if(bDone){
+				mergedList.add(list.get(pointerA));
+				pointerA++;
+			} else if(list.get(pointerA) > list.get(pointerB)){
+				mergedList.add(list.get(i));
+				pointerA++;
+			} else{
+				mergedList.add(list.get(pointerB));
+				pointerB++;
+			}
+
+			if(pointerA > mid){
+				aDone = true;
+			}
+			if(pointerB > last){
+				bDone = true;
+			}
+		}
+
+		for(int i = first, i <= last; i++){
+			list.set(i, mergedList.get(i));
 		}
 	}
 
