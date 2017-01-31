@@ -26,13 +26,6 @@ public class Robot extends IterativeRobot {
 
 	private Controller controller;
 
-	private RobotDrive drive;
-	private LogisticMotorSpeedController test;
-
-	private Compressor compressor;
-	private DoubleSolenoid leftGearShifter;
-	private DoubleSolenoid rightGearShifter;
-
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -46,15 +39,6 @@ public class Robot extends IterativeRobot {
 		timer = new Timer();
 
 		controller = new Controller(0);
-
-		drive = new RobotDrive(0, 1);
-		drive.setExpiration(0.1f);
-		test = new LogisticMotorSpeedController();
-
-		compressor = new Compressor(0);
-		compressor.setClosedLoopControl(true);
-		leftGearShifter = new DoubleSolenoid(0, 1);
-		rightGearShifter = new DoubleSolenoid(2, 3);
 	}
 
 	/**
@@ -93,7 +77,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit(){
-		test.set(0f, 1f);
 	}
 
 	/**
@@ -101,16 +84,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		shiftLow();
-
-		if(controller.getButtonA()){
-			test.set(0.7f, 1f);
-			timer.stop();
-			timer.reset();
-			timer.start();
-		}
-		drive.tankDrive(test.getCurrentSpeed(timer.get()), -test.getCurrentSpeed(timer.get()));
-
 		Timer.delay(PERIODIC_DELAY);
 	}
 
@@ -119,16 +92,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-	}
-
-	public void shiftLow(){
-		leftGearShifter.set(DoubleSolenoid.Value.kForward);
-		rightGearShifter.set(DoubleSolenoid.Value.kForward);
-	}
-
-	public void shiftHigh(){
-		leftGearShifter.set(DoubleSolenoid.Value.kReverse);
-		rightGearShifter.set(DoubleSolenoid.Value.kReverse);
 	}
 }
 
