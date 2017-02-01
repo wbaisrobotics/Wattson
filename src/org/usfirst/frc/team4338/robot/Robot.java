@@ -86,11 +86,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		double adjustValue = SmartDashboard.getNumber("adjustValue");
-		if(Math.signum(adjustValue) > 0){
-			servo.setAngle(servo.getAngle() + 1);
-		} else if(Math.signum(adjustValue) < 0){
-			servo.setAngle(servo.getAngle() - 1);
+		if(controller.getButtonA()){
+			double adjustValue = SmartDashboard.getNumber("adjustValue");
+			if(Math.signum(adjustValue) > 0){
+				servo.setAngle(servo.getAngle() + 1);
+			} else if(Math.signum(adjustValue) < 0){
+				servo.setAngle(servo.getAngle() - 1);
+			}
 		}
 
 		Timer.delay(PERIODIC_DELAY);
