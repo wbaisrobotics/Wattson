@@ -89,7 +89,7 @@ public class Robot extends IterativeRobot {
 		double adjustValue = SmartDashboard.getNumber("adjustValue");
 		if(Math.signum(adjustValue) > 0){
 			servo.setAngle(servo.getAngle() + 1);
-		} else(Math.signum(adjustValue) < 0){
+		} else if(Math.signum(adjustValue) < 0){
 			servo.setAngle(servo.getAngle() - 1);
 		}
 
