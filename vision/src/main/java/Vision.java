@@ -42,25 +42,25 @@ public class Vision{
 	public Vision(){
 		// Loads our OpenCV library. This MUST be included
 		System.loadLibrary("opencv_java310");
-		
+
 		// Connect NetworkTables, and get access to the publishing table
 		NetworkTable.setClientMode();
 		// Set your team number here
 		NetworkTable.setTeam(4338);
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
-		
+
 		//Initialize Camera
 		camera = new UsbCamera("CoprocessorCamera", 0);
 		camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
 		camera.setResolution(width, height);
 		camera.setFPS(fps);
-		
+
 		//Initialize cv sink and source
 		cvSink = new CvSink("CV Image Grabber");
 		cvSink.setSource(camera);
 		cvSource = new CvSource("CV Image Source", VideoMode.PixelFormat.kMJPEG, width, height, fps);
-		
+
 		//Initialize streams
 		rawStream = new MjpegServer("Raw Server", rawStreamPort);
 		rawStream.setSource(camera);
@@ -123,7 +123,7 @@ public class Vision{
 				target = Improc.boundingRect(contours.get(0));
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
-				
+
 				adjustValue = (target.x + target.width / 2) - width / 2;
 				//Update network table
 				sd.putNumber("adjustValue", adjustValue);
@@ -164,7 +164,7 @@ public class Vision{
 			// Just skip and continue
 			long frameTime = cvSink.grabFrame(frame);
 			if (frameTime == 0) continue;
-			
+
 			//Convert to HSV for easier filtering
 			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
 			//Filter image by color
@@ -182,12 +182,12 @@ public class Vision{
 				target = findLargestContour(contours);
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
-				
+
 				adjustValue = (target.x + target.width / 2) - width / 2;
 				//Update network table
 				sd.putNumber("adjustValue", adjustValue);
 			}
-			
+
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
 		}
@@ -237,7 +237,7 @@ public class Vision{
 			}
 		}
 
-		for(int i = first, i <= last; i++){
+		for(int i = first; i <= last; i++){
 			list.set(i, mergedList.get(i));
 		}
 	}
