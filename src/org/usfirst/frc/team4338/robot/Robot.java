@@ -113,7 +113,7 @@ public class Robot extends IterativeRobot {
 		double y = controller.getRightJoyY();
 		y = 0.9 * Math.signum(y) * Math.pow(y, 2);
 
-		drive.tankDrive(y - x, y + x);
+		drive.tankDrive(-y + x, -y - x); //positive = forward
 
 		Timer.delay(PERIODIC_DELAY);
 	}
