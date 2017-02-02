@@ -24,10 +24,12 @@ public class Robot extends IterativeRobot {
 	private Timer timer;
 
 	private Controller controller;
-	
+
 	private RobotDrive drive;
 	private Servo leftGearShifter;
 	private Servo rightGearShifter;
+
+	private BallElevator ballElevator;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -42,10 +44,12 @@ public class Robot extends IterativeRobot {
 		timer = new Timer();
 
 		controller = new Controller(0);
-		
+
 		drive = new RobotDrive(0, 1, 2, 3);
 		leftGearShifter = new Servo(4);
 		rightGearShifter = new Servo(5);
+
+		ballElevator = new BallElevator();
 	}
 
 	/**
@@ -98,24 +102,33 @@ public class Robot extends IterativeRobot {
 			shiftLow();
 		}
 
+		if(controller.getButtonA()){
+			ballElevator.set(1, 1);
+		} else{
+			ballElevator.set(0, 0);
+		}
+
+		//DRIVING CURRENTLY DOESN'T WORK
+		/*
 		double x = controller.getRightJoyX();
 		x = 0.8 * Math.signum(x) * Math.pow(x, 2);
 		double y = controller.getRightJoyY();
 		y = 0.9 * Math.signum(y) * Math.pow(y, 2);
 
 		drive.tankDrive(y - x, y + x);
+		*/
 
 		Timer.delay(PERIODIC_DELAY);
 	}
-	
+
 	private void shiftHigh(){
-		leftGearShifter.setAngle(0);
-		rightGearShifter.setAngle(0);
+		leftGearShifter.setAngle(0); //Bad
+		rightGearShifter.setAngle(0); //Bad
 	}
-	
+
 	private void shiftLow(){
-		leftGearShifter.setAngle(110);
-		rightGearShifter.setAngle(170);
+		leftGearShifter.setAngle(110); //Good
+		rightGearShifter.setAngle(170); //Bad
 	}
 
 	/**
@@ -125,4 +138,3 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 	}
 }
-
