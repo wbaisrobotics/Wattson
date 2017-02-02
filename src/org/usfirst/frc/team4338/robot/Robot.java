@@ -103,20 +103,17 @@ public class Robot extends IterativeRobot {
 		}
 
 		if(controller.getButtonA()){
-			ballElevator.set(1, 1);
+			ballElevator.set(0.3f, -1f);
 		} else{
 			ballElevator.set(0, 0);
 		}
 
-		//DRIVING CURRENTLY DOESN'T WORK
-		/*
 		double x = controller.getRightJoyX();
 		x = 0.8 * Math.signum(x) * Math.pow(x, 2);
 		double y = controller.getRightJoyY();
 		y = 0.9 * Math.signum(y) * Math.pow(y, 2);
 
 		drive.tankDrive(y - x, y + x);
-		*/
 
 		Timer.delay(PERIODIC_DELAY);
 	}
