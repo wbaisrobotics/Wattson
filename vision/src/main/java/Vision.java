@@ -237,7 +237,7 @@ public class Vision{
 			}
 		}
 
-		for(int i = first, i <= last; i++){
+		for(int i = first; i <= last; i++){
 			list.set(i, mergedList.get(i));
 		}
 	}
