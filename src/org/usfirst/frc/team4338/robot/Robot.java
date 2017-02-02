@@ -30,6 +30,7 @@ public class Robot extends IterativeRobot {
 	private Servo rightGearShifter;
 
 	private BallElevator ballElevator;
+	private Shooter shooter;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -50,6 +51,7 @@ public class Robot extends IterativeRobot {
 		rightGearShifter = new Servo(5);
 
 		ballElevator = new BallElevator();
+		shooter = new Shooter();
 	}
 
 	/**
@@ -102,10 +104,18 @@ public class Robot extends IterativeRobot {
 			shiftLow();
 		}
 
+		//Ball elevator test
 		if(controller.getButtonA()){
 			ballElevator.set(0.3f, -1f);
 		} else{
-			ballElevator.set(0, 0);
+			ballElevator.set(0f, 0f);
+		}
+
+		//Shooter test
+		if(controller.getRightTrigger() > 0){
+			shooter.set(0.7f, 1f);
+		} else{
+			shooter.set(0f, 0f);
 		}
 
 		double x = controller.getRightJoyX();
