@@ -47,6 +47,8 @@ public class Robot extends IterativeRobot {
 		controller = new Controller(0);
 
 		drive = new RobotDrive(0, 1, 2, 3);
+		drive.setExpiration(0.1f);
+		
 		leftGearShifter = new Servo(4);
 		rightGearShifter = new Servo(5);
 
