@@ -48,7 +48,7 @@ public class Robot extends IterativeRobot {
 
 		drive = new RobotDrive(0, 1, 2, 3);
 		drive.setExpiration(0.1f);
-		
+
 		leftGearShifter = new Servo(4);
 		rightGearShifter = new Servo(5);
 
@@ -120,6 +120,7 @@ public class Robot extends IterativeRobot {
 			shooter.set(0f, 0f);
 		}
 
+		//Driving
 		double x = controller.getRightJoyX();
 		x = 0.8 * Math.signum(x) * Math.pow(x, 2);
 		double y = controller.getRightJoyY();
