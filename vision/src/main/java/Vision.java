@@ -97,6 +97,8 @@ public class Vision{
 		Scalar contourColor = new Scalar(110, 255, 255);
 		Rect target;
 		Scalar targetColor = new Scalar(255, 255, 255);
+		double targetRatio;
+		double ratioFudge = 0.1f; //What to do?
 
 		while(true){
 			// Grab a frame. If it has a frame time of 0, there was an error.
@@ -116,15 +118,25 @@ public class Vision{
 			//Find contours
 			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-			//TODO identify boiler target (the two strips of tape)
-			//Find largest contour
+			//Find target
 			if(contours.size() > 0){
-				sortContours(contours); //Merge sort the contours
+				//Merge sort the contours
+				sortContours(contours);
+
 				target = Improc.boundingRect(contours.get(0));
+				double aspectRatio = target.width / target.height;
+				if(aspectRatio > targetRatio - ratioFudge && aspectRatio < targetRatio + ratioFudge){ //Is a valid target
+
+				}
+
+				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 
-				adjustValue = (target.x + target.width / 2) - width / 2;
+				//Set adjust value to offset from center in pixels
+				//adjustValue = (target.x + target.width / 2) - width / 2;
+				//Set adjust value to a normalized number from -1 to 1
+				adjustValue = -1 + (target.x * 2) / width;
 				//Update network table
 				sd.putNumber("adjustValue", adjustValue);
 			}
