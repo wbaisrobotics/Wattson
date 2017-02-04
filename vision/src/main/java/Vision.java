@@ -128,8 +128,8 @@ public class Vision{
 				//Get rotated rect
 				target = Improc.minAreaRect(contours.get(0));
 				target.points(targetVerts);
-				
-				//double aspectRatio = target.width / target.height;
+
+				double aspectRatio = target.size.width / target.size.height;
 
 				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
