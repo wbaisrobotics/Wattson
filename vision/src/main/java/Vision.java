@@ -22,6 +22,7 @@ public class Vision{
 	private NetworkTable sd;
 	private double adjustValue; //- for left, 0 on, + for right
 
+	//Diagonal fov of 68.5 degrees
 	private UsbCamera camera;
 	private int width = 640;
 	private int height = 480;
