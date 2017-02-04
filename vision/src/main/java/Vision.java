@@ -95,8 +95,10 @@ public class Vision{
 		Mat hierarchy = new Mat();
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Scalar contourColor = new Scalar(110, 255, 255);
-		Rect target;
+
 		Scalar targetColor = new Scalar(255, 255, 255);
+		RotatedRect target;
+		Point[] targetVerts = new Point[4];
 		double targetRatio;
 		double ratioFudge = 0.1f; //What to do?
 
@@ -123,15 +125,17 @@ public class Vision{
 				//Merge sort the contours
 				sortContours(contours);
 
-				target = Improc.boundingRect(contours.get(0));
-				double aspectRatio = target.width / target.height;
-				if(aspectRatio > targetRatio - ratioFudge && aspectRatio < targetRatio + ratioFudge){ //Is a valid target
-
-				}
+				//Get rotated rect
+				target = Improc.minAreaRect(contours.get(0));
+				target.points(targetVerts);
+				
+				//double aspectRatio = target.width / target.height;
 
 				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+				for(int i = 0; i < 4; i++){
+					Improc.line(hsv, targetVerts[i], targetVerts[(j + 1) % 4], targetColor);
+				}
 
 				//Set adjust value to offset from center in pixels
 				//adjustValue = (target.x + target.width / 2) - width / 2;
