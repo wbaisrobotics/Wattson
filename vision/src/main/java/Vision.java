@@ -159,12 +159,61 @@ public class Vision{
 		return target;
 	}
 
+	private void sortContours(ArrayList<MatOfPoint> list, int first, int last){
+		if(first == last){
+		} else if(last - first == 1){
+			if(list.get(last) > list.get(first)){ //Put greatest value first for greatest to least
+				int temp = list.get(first);
+				list.set(first, last);
+				list.set(last, temp);
+			}
+		} else{
+			int mid = (first + last) / 2;
+			sortContours(list, first, mid);
+			sortContours(list, mid + 1, last);
+			sortedList = merge(list, first, mid, last);
+		}
+	}
+
+	private void merge(ArrayList<MatOfPoint> list, int first, int mid, int last){
+		ArrayList<MatOfPoint> mergedList = new ArrayList<MatOfPoint>();
+		int pointerA = first;
+		int pointerB = mid + 1;
+
+		for(int i = 0; i < last - first + 1; i++){
+			if(aDone){
+				mergedList.add(list.get(pointerB));
+				pointerB++;
+			} else if(bDone){
+				mergedList.add(list.get(pointerA));
+				pointerA++;
+			} else if(list.get(pointerA) > list.get(pointerB)){
+				mergedList.add(list.get(i));
+				pointerA++;
+			} else{
+				mergedList.add(list.get(pointerB));
+				pointerB++;
+			}
+
+			if(pointerA > mid){
+				aDone = true;
+			}
+			if(pointerB > last){
+				bDone = true;
+			}
+		}
+
+		for(int i = first; i <= last; i++){
+			list.set(i, mergedList.get(i));
+		}
+	}
+
 	public void processGear(){
 		Mat frame = new Mat();
 		Mat hsv = new Mat();
 	}
 
-	public void processTest(){
+	public void processBlue(){
 		// All Mats and Lists should be stored outside the loop to avoid allocations
 		// as they are expensive to create
 		Mat frame = new Mat();
@@ -218,55 +267,6 @@ public class Vision{
 		}
 	}
 
-	private void sortContours(ArrayList<MatOfPoint> list, int first, int last){
-		if(first == last){
-		} else if(last - first == 1){
-			if(list.get(last) > list.get(first)){ //Put greatest value first for greatest to least
-				int temp = list.get(first);
-				list.set(first, last);
-				list.set(last, temp);
-			}
-		} else{
-			int mid = (first + last) / 2;
-			sortContours(list, first, mid);
-			sortContours(list, mid + 1, last);
-			sortedList = merge(list, first, mid, last);
-		}
-	}
-
-	private void merge(ArrayList<MatOfPoint> list, int first, int mid, int last){
-		ArrayList<MatOfPoint> mergedList = new ArrayList<MatOfPoint>();
-		int pointerA = first;
-		int pointerB = mid + 1;
-
-		for(int i = 0; i < last - first + 1; i++){
-			if(aDone){
-				mergedList.add(list.get(pointerB));
-				pointerB++;
-			} else if(bDone){
-				mergedList.add(list.get(pointerA));
-				pointerA++;
-			} else if(list.get(pointerA) > list.get(pointerB)){
-				mergedList.add(list.get(i));
-				pointerA++;
-			} else{
-				mergedList.add(list.get(pointerB));
-				pointerB++;
-			}
-
-			if(pointerA > mid){
-				aDone = true;
-			}
-			if(pointerB > last){
-				bDone = true;
-			}
-		}
-
-		for(int i = first; i <= last; i++){
-			list.set(i, mergedList.get(i));
-		}
-	}
-
 	private Rect findLargestContour(ArrayList<MatOfPoint> contours){
 		double largestArea = Imgproc.contourArea(contours.get(0));
 		int largestIndex = 0;
@@ -284,6 +284,6 @@ public class Vision{
 
 	public static void main(String[] args){
 		Vision vision = new Vision();
-		vision.processTest();
+		vision.processBlue();
 	}
 }
