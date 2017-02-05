@@ -97,11 +97,7 @@ public class Vision{
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Scalar contourColor = new Scalar(110, 255, 255);
 
-		Scalar targetColor = new Scalar(255, 255, 255);
-		RotatedRect target;
-		Point[] targetVerts = new Point[4];
-		double targetRatio;
-		double ratioFudge = 0.1f; //What to do?
+		BoilerTarget target;
 
 		while(true){
 			// Grab a frame. If it has a frame time of 0, there was an error.
@@ -125,25 +121,20 @@ public class Vision{
 			if(contours.size() > 0){
 				//Merge sort the contours
 				sortContours(contours);
-
-				//Get rotated rect
-				target = Improc.minAreaRect(contours.get(0));
-				target.points(targetVerts);
-
-				double aspectRatio = target.size.width / target.size.height;
+				//Find the matching target
+				target = findBoilerTarget(contours);
 
 				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				for(int i = 0; i < 4; i++){
-					Improc.line(hsv, targetVerts[i], targetVerts[(j + 1) % 4], targetColor);
+				if(target.exists()){ //Draw target if it exists
+					for(int i = 0; i < 4; i++){
+						Improc.line(hsv, targetVerts[i], targetVerts[(j + 1) % 4], targetColor);
+					}
 				}
 
-				//Set adjust value to offset from center in pixels
-				//adjustValue = (target.x + target.width / 2) - width / 2;
-				//Set adjust value to a normalized number from -1 to 1
-				adjustValue = -1 + (target.x * 2) / width;
-				//Update network table
-				sd.putNumber("adjustValue", adjustValue);
+				//Update network table with the target data
+				sd.putBoolean("targetExists", target.exists);
+				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
 			}
 
 			//Put modified cv image on cv source to be streamed
