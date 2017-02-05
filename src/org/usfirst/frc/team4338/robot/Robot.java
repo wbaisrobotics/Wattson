@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4338.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,8 +23,6 @@ public class Robot extends IterativeRobot {
 
 	private Controller controller;
 
-	private Servo servo;
-
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -39,8 +36,6 @@ public class Robot extends IterativeRobot {
 		timer = new Timer();
 
 		controller = new Controller(0);
-
-		servo = new Servo(0);
 	}
 
 	/**
@@ -87,12 +82,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		if(SmartDashboard.getBoolean("targetExists", false)){
-			double adjustValue = SmartDashboard.getNumber("adjustValue", 0);
-			if(Math.signum(adjustValue) > 0){
-				servo.setAngle(servo.getAngle() + 1);
-			} else if(Math.signum(adjustValue) < 0){
-				servo.setAngle(servo.getAngle() - 1);
-			}
+			//do target aiming here
 		}
 
 		Timer.delay(PERIODIC_DELAY);
