@@ -142,6 +142,21 @@ public class Vision{
 		}
 	}
 
+	private BoilerTarget findBoilerTarget(ArrayList<MatOfPoint> contours){
+		BoilerTarget target;
+		Point[] targetVerts = new Point[4];
+		double targetRatio = 3.75f; //15in / 4in
+		double ratioFudge = 0.1f; //What to do?
+
+		for(MatOfPoint contour : contours){
+			//target = Improc.minAreaRect(contour);
+			//target.points(targetVerts);
+			//target.getAspectRatio();
+		}
+
+		return target;
+	}
+
 	public void processGear(){
 		Mat frame = new Mat();
 		Mat hsv = new Mat();
