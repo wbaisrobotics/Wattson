@@ -146,7 +146,7 @@ public class Vision{
 		BoilerTarget target;
 		Point[] targetVerts = new Point[4];
 		double targetRatio = 3.75f; //15in / 4in
-		double ratioFudge = 0.1f; //What to do?
+		double fudge = 0.1f; //Maybe ~10% uncertainty
 
 		for(MatOfPoint contour : contours){
 			//target = Improc.minAreaRect(contour);
