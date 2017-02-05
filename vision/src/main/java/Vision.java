@@ -22,6 +22,7 @@ public class Vision{
 	private NetworkTable sd;
 	private double adjustValue; //- for left, 0 on, + for right
 
+	//Diagonal fov of 68.5 degrees
 	private UsbCamera camera;
 	private int width = 640;
 	private int height = 480;
@@ -95,8 +96,8 @@ public class Vision{
 		Mat hierarchy = new Mat();
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Scalar contourColor = new Scalar(110, 255, 255);
-		Rect target;
-		Scalar targetColor = new Scalar(255, 255, 255);
+
+		BoilerTarget target;
 
 		while(true){
 			// Grab a frame. If it has a frame time of 0, there was an error.
@@ -116,22 +117,45 @@ public class Vision{
 			//Find contours
 			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-			//TODO identify boiler target (the two strips of tape)
-			//Find largest contour
+			//Find target
 			if(contours.size() > 0){
-				sortContours(contours); //Merge sort the contours
-				target = Improc.boundingRect(contours.get(0));
-				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+				//Merge sort the contours
+				sortContours(contours);
+				//Find the matching target
+				target = findBoilerTarget(contours);
 
-				adjustValue = (target.x + target.width / 2) - width / 2;
-				//Update network table
-				sd.putNumber("adjustValue", adjustValue);
+				//Draw findings
+				Imgproc.drawContours(hsv, contours, -1, contourColor);
+				if(target.exists()){ //Draw target if it exists
+					for(int i = 0; i < 4; i++){
+						//Fix this line
+						Improc.line(hsv, targetVerts[i], targetVerts[(j + 1) % 4], targetColor);
+					}
+				}
+
+				//Update network table with the target data
+				sd.putBoolean("targetExists", target.exists);
+				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
 			}
 
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
 		}
+	}
+
+	private BoilerTarget findBoilerTarget(ArrayList<MatOfPoint> contours){
+		BoilerTarget target;
+		Point[] targetVerts = new Point[4];
+		double targetRatio = 3.75f; //15in / 4in
+		double fudge = 0.1f; //Maybe ~10% uncertainty
+
+		for(MatOfPoint contour : contours){
+			//target = Improc.minAreaRect(contour);
+			//target.points(targetVerts);
+			//target.getAspectRatio();
+		}
+
+		return target;
 	}
 
 	public void processGear(){
