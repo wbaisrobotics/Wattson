@@ -28,6 +28,10 @@ public class Robot extends IterativeRobot {
 	private RobotDrive drive;
 	private Servo leftGearShifter;
 	private Servo rightGearShifter;
+	private int leftGearShifterLowAngle = 50;
+	private int leftGearShifterHighAngle = 125;
+	private int rightGearShifterLowAngle = 5;
+	private int rightGearShifterHighAngle = 95;
 
 	private BallElevator ballElevator;
 	private Shooter shooter;
@@ -106,6 +110,7 @@ public class Robot extends IterativeRobot {
 			shiftLow();
 		}
 
+		/*
 		//Ball elevator test
 		if(controller.getButtonA()){
 			ballElevator.set(0.3f, -1f);
@@ -119,6 +124,14 @@ public class Robot extends IterativeRobot {
 		} else{
 			shooter.set(0f, 0f);
 		}
+		*/
+
+		if(controller.getPOV() == 0){
+			rightGearShifterLowAngle++;
+		} else if(controller.getPOV() == 180){
+			rightGearShifterLowAngle--;
+		}
+		SmartDashboard.putNumber("gearAngle", rightGearShifterLowAngle);
 
 		//Driving
 		double x = controller.getRightJoyX();
@@ -126,19 +139,19 @@ public class Robot extends IterativeRobot {
 		double y = controller.getRightJoyY();
 		y = 0.9 * Math.signum(y) * Math.pow(y, 2);
 
-		drive.tankDrive(-y + x, -y - x); //positive = forward
+		drive.tankDrive(-y - x, -y + x);
 
 		Timer.delay(PERIODIC_DELAY);
 	}
 
 	private void shiftHigh(){
-		leftGearShifter.setAngle(0); //Bad
-		rightGearShifter.setAngle(0); //Bad
+		leftGearShifter.setAngle(leftGearShifterHighAngle);
+		rightGearShifter.setAngle(rightGearShifterHighAngle);
 	}
 
 	private void shiftLow(){
-		leftGearShifter.setAngle(110); //Good
-		rightGearShifter.setAngle(170); //Bad
+		leftGearShifter.setAngle(leftGearShifterLowAngle);
+		rightGearShifter.setAngle(rightGearShifterLowAngle);
 	}
 
 	/**
