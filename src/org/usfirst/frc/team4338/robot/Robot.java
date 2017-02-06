@@ -21,8 +21,6 @@ public class Robot extends IterativeRobot {
 	public final double PERIODIC_DELAY = 0.005f;
 	private Timer timer;
 
-	private Controller controller;
-
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -34,8 +32,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 
 		timer = new Timer();
-
-		controller = new Controller(0);
 	}
 
 	/**
@@ -83,6 +79,8 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		if(SmartDashboard.getBoolean("targetExists", false)){
 			//do target aiming here
+		} else{
+			//Regular teleop code
 		}
 
 		Timer.delay(PERIODIC_DELAY);
