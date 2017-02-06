@@ -110,7 +110,6 @@ public class Robot extends IterativeRobot {
 			shiftLow();
 		}
 
-		/*
 		//Ball elevator test
 		if(controller.getButtonA()){
 			ballElevator.set(0.3f, -1f);
@@ -124,14 +123,6 @@ public class Robot extends IterativeRobot {
 		} else{
 			shooter.set(0f, 0f);
 		}
-		*/
-
-		if(controller.getPOV() == 0){
-			rightGearShifterLowAngle++;
-		} else if(controller.getPOV() == 180){
-			rightGearShifterLowAngle--;
-		}
-		SmartDashboard.putNumber("gearAngle", rightGearShifterLowAngle);
 
 		//Driving
 		double x = controller.getRightJoyX();
