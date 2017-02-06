@@ -7,12 +7,17 @@ import edu.wpi.first.wpilibj.DriverStation;
  * configured for Logitech controllers.
  */
 public class Controller {
+	public static final int POVUP = 0;
+	public static final int POVLEFT = 90;
+	public static final int POVDOWN = 180;
+	public static final int POVRIGHT = 270;
+	
 	private DriverStation ds;
 	private final int port;
 
 	/**
 	 * Creates a controller at the given port.
-	 * 
+	 *
 	 * @param port the port
 	 */
 	public Controller(int port) {
@@ -73,7 +78,7 @@ public class Controller {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public int getPOV() {
@@ -82,7 +87,7 @@ public class Controller {
 
 	/**
 	 * Gets the value of a given axis on the set port.
-	 * 
+	 *
 	 * @param axis the axis
 	 * @return the value
 	 */
@@ -91,7 +96,7 @@ public class Controller {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param button
 	 * @return
 	 */
