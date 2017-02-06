@@ -119,7 +119,7 @@ public class Robot extends IterativeRobot {
 
 		//Shooter test
 		if(controller.getRightTrigger() > 0){
-			shooter.set(0.7f, 1f);
+			shooter.set(-0.7f, 1f);
 		} else{
 			shooter.set(0f, 0f);
 		}
