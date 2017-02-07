@@ -126,6 +126,13 @@ public class Robot extends IterativeRobot {
 			shooter.set(0f, 0f);
 		}
 
+		//Gear catcher test
+		if(controller.getButtonA()){
+			gearCatcher.open();
+		} else if(controller.getButtonB()){
+			gearCatcher.close();
+		}
+
 		//Driving
 		double x = controller.getRightJoyX();
 		x = 0.8 * Math.signum(x) * Math.pow(x, 2); //Maybe decrease?
