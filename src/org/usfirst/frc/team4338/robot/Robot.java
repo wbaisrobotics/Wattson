@@ -35,6 +35,7 @@ public class Robot extends IterativeRobot {
 
 	private BallElevator ballElevator;
 	private Shooter shooter;
+	private GearCatcher gearCatcher;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -58,6 +59,7 @@ public class Robot extends IterativeRobot {
 
 		ballElevator = new BallElevator();
 		shooter = new Shooter();
+		gearCatcher = new GearCatcher();
 	}
 
 	/**
