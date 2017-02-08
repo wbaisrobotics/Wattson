@@ -126,7 +126,7 @@ public class Vision{
 
 				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				if(target.exists()){ //Draw target if it exists
+				if(target.doesExist()){ //Draw target if it exists
 					for(int i = 0; i < 4; i++){
 						//Fix this line, targetVerts out of scope!
 						Imgproc.line(hsv, targetVerts[i], targetVerts[(i + 1) % 4], target.getColor());
