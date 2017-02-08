@@ -120,7 +120,7 @@ public class Vision{
 			//Find target
 			if(contours.size() > 0){
 				//Merge sort the contours
-				sortContours(contours);
+				sortContours(contours, 0, contours.size() - 1);
 				//Find the matching target
 				target = findBoilerTarget(contours);
 
@@ -128,13 +128,13 @@ public class Vision{
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				if(target.exists()){ //Draw target if it exists
 					for(int i = 0; i < 4; i++){
-						//Fix this line
-						Improc.line(hsv, targetVerts[i], targetVerts[(j + 1) % 4], targetColor);
+						//Fix this line, targetVerts out of scope!
+						Imgproc.line(hsv, targetVerts[i], targetVerts[(i + 1) % 4], target.getColor());
 					}
 				}
 
 				//Update network table with the target data
-				sd.putBoolean("targetExists", target.exists);
+				sd.putBoolean("targetExists", target.doesExist());
 				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
 			}
 
@@ -221,16 +221,16 @@ public class Vision{
 	private void sortContours(ArrayList<MatOfPoint> list, int first, int last){
 		if(first == last){
 		} else if(last - first == 1){
-			if(list.get(last) > list.get(first)){ //Put greatest value first for greatest to least
-				int temp = list.get(first);
-				list.set(first, last);
+			if(list.get(last) > list.get(first)){ //Need to compare area not MatOfPoint
+				MatOfPoint temp = list.get(first);
+				list.set(first, list.get(last));
 				list.set(last, temp);
 			}
 		} else{
 			int mid = (first + last) / 2;
 			sortContours(list, first, mid);
 			sortContours(list, mid + 1, last);
-			sortedList = merge(list, first, mid, last);
+			merge(list, first, mid, last);
 		}
 	}
 
@@ -240,25 +240,18 @@ public class Vision{
 		int pointerB = mid + 1;
 
 		for(int i = 0; i < last - first + 1; i++){
-			if(aDone){
+			if(pointerA > mid){
 				mergedList.add(list.get(pointerB));
 				pointerB++;
-			} else if(bDone){
+			} else if(pointerB > last){
 				mergedList.add(list.get(pointerA));
 				pointerA++;
-			} else if(list.get(pointerA) > list.get(pointerB)){
+			} else if(list.get(pointerA) > list.get(pointerB)){ //Need to compare areas not MatOfPoint
 				mergedList.add(list.get(i));
 				pointerA++;
 			} else{
 				mergedList.add(list.get(pointerB));
 				pointerB++;
-			}
-
-			if(pointerA > mid){
-				aDone = true;
-			}
-			if(pointerB > last){
-				bDone = true;
 			}
 		}
 
