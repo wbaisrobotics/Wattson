@@ -82,7 +82,6 @@ public class Vision{
 			to find the two tape bands on the boiler (2 contours)
 		Larger bounding box encompassing the two target contours??
 	*/
-	/*
 	public void processBoiler(){
 		Mat frame = new Mat();
 		Mat hsv = new Mat();
@@ -159,7 +158,6 @@ public class Vision{
 
 		return target;
 	}
-	*/
 
 	public void processGear(){
 		Mat frame = new Mat();
@@ -220,7 +218,6 @@ public class Vision{
 		}
 	}
 
-	/*
 	private void sortContours(ArrayList<MatOfPoint> list, int first, int last){
 		if(first == last){
 		} else if(last - first == 1){
@@ -262,7 +259,6 @@ public class Vision{
 			list.set(i, mergedList.get(i));
 		}
 	}
-	*/
 
 	private Rect findLargestContour(ArrayList<MatOfPoint> contours){
 		double largestArea = Imgproc.contourArea(contours.get(0));
