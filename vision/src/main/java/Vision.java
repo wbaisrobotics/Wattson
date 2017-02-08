@@ -173,8 +173,8 @@ public class Vision{
 		Mat hsv = new Mat();
 
 		//Range to filter
-		Scalar lower = new Scalar(110, 50, 50);
-		Scalar upper = new Scalar(130, 255, 255);
+		Scalar lower = new Scalar(sd.getNumber("lowerH", 0), sd.getNumber("lowerS", 0), sd.getNumber("lowerV", 0));
+		Scalar upper = new Scalar(sd.getNumber("upperH", 0), sd.getNumber("upperS", 0), sd.getNumber("upperV", 0));
 
 		//Kernel size to blur with
 		Size blurAmount = new Size(5, 5);
