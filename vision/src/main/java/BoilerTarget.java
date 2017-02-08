@@ -10,11 +10,11 @@ public class BoilerTarget extends RotatedRect{
     }
 
     public double getNormalizedHorizontalOffset(double camWidth){
-        return -1 + x * 2 / camWidth;
+        return -1 + center.x * 2 / camWidth;
     }
 
     public double getHorizontalOffset(double camWidth){
-        return (x + width / 2) - camWidth / 2;
+        return (center.x + size.width / 2) - camWidth / 2;
     }
 
     public double getAspectRatio(){
