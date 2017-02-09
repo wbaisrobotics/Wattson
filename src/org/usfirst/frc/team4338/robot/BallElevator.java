@@ -7,8 +7,8 @@ public class BallElevator{
     private Victor belt;
 
     public BallElevator(){
-        sweeper = new Victor(6);
-        belt = new Victor(7);
+        sweeper = new Victor(4);
+        belt = new Victor(5);
     }
 
     public void set(double sweeperSpeed, double beltSpeed){
