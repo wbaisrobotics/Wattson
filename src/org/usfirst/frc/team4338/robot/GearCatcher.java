@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4338.robot;
 
+import edu.wpi.first.wpilibj.Servo;
+
 public class GearCatcher{
     private Servo bottom;
     private Servo left;
@@ -11,15 +13,15 @@ public class GearCatcher{
         right = new Servo(9);
     }
 
-    public void close(){
-        bottom.setAngle();
-        left.setAngle();
-        right.setAngle();
+    public void close(){ //CHANGE THESE
+        bottom.setAngle(0);
+        left.setAngle(0);
+        right.setAngle(0);
     }
 
-    public void open(){
-        bottom.setAngle();
-        left.setAngle();
-        right.setAngle();
+    public void open(){ //CHANGE THESE
+        bottom.setAngle(20);
+        left.setAngle(20);
+        right.setAngle(20);
     }
 }
