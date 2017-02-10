@@ -137,9 +137,9 @@ public class Robot extends IterativeRobot {
 
 		//Driving
 		double x = controller.getRightJoyX();
-		x = 0.8 * Math.signum(x) * Math.pow(x, 2); //Maybe decrease?
+		x = 0.55 * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
 		double y = controller.getRightJoyY();
-		y = 0.9 * Math.signum(y) * Math.pow(y, 2);
+		y = 0.6 * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
 
 		drive.tankDrive(-y - x, -y + x);
 

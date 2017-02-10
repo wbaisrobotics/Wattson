@@ -13,15 +13,15 @@ public class GearCatcher{
         right = new Servo(9);
     }
 
-    public void close(){ //CHANGE THESE
-        bottom.setAngle(0);
-        left.setAngle(0);
-        right.setAngle(0);
+    public void close(){
+        bottom.setAngle(30);
+        left.setAngle(10);
+        right.setAngle(20);
     }
 
-    public void open(){ //CHANGE THESE
-        bottom.setAngle(20);
-        left.setAngle(20);
-        right.setAngle(20);
+    public void open(){
+        bottom.setAngle(90);
+        left.setAngle(80);
+        right.setAngle(88);
     }
 }
