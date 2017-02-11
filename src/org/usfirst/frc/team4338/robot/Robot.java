@@ -33,8 +33,8 @@ public class Robot extends IterativeRobot {
 	private int rightGearShifterLowAngle = 5;
 	private int rightGearShifterHighAngle = 95;
 
-	private BallElevator ballElevator;
-	//private Shooter shooter;
+	//private BallElevator ballElevator;
+	private Shooter shooter;
 	private GearCatcher gearCatcher;
 
 	/**
@@ -57,8 +57,8 @@ public class Robot extends IterativeRobot {
 		leftGearShifter = new Servo(2);
 		rightGearShifter = new Servo(3);
 
-		ballElevator = new BallElevator();
-		//shooter = new Shooter();
+		//ballElevator = new BallElevator();
+		shooter = new Shooter();
 		gearCatcher = new GearCatcher();
 	}
 
@@ -113,20 +113,20 @@ public class Robot extends IterativeRobot {
 		}
 
 		//Ball elevator test
+		/*
 		if(controller.getLeftTrigger() > 0){
 			ballElevator.set(0.3f, -1f);
 		} else{
 			ballElevator.set(0f, 0f);
 		}
+		*/
 
 		//Shooter test
-		/*
 		if(controller.getRightTrigger() > 0){
 			shooter.set(-0.7f, 1f);
 		} else{
 			shooter.set(0f, 0f);
 		}
-		*/
 
 		//Gear catcher test
 		if(controller.getButtonA()){
