@@ -43,7 +43,7 @@ public class Robot extends IterativeRobot {
 
 		timer = new Timer();
 
-		controller = new Controller();
+		controller = new Controller(0);
 
 		leftCAN1 = new CANTalon(1);
 		leftCAN2 = new CANTalon(2);
