@@ -107,7 +107,7 @@ public class Robot extends IterativeRobot {
 		x = 0.55 * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
 		double y = controller.getRightJoyY();
 		y = 0.6 * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
-		drive.tankDrive(-y - x, -y + x);
+		drive.tankDrive(y - x, y + x);
 
 		Timer.delay(PERIODIC_DELAY);
 	}
