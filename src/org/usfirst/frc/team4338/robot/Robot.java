@@ -108,7 +108,7 @@ public class Robot extends IterativeRobot {
 		}
 
 		if(controller.getLeftTrigger() > 0){
-			ballElevator.set(-0.7f, 1f);
+			ballElevator.set(-0.7f, -1f);
 		} else{
 			ballElevator.set(0f, 0f);
 		}
