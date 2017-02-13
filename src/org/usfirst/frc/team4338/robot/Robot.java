@@ -25,11 +25,14 @@ public class Robot extends IterativeRobot {
 
 	private Controller controller;
 
+	//Drive
 	private CANTalon leftCAN1;
 	private CANTalon leftCAN2;
 	private CANTalon rightCAN1;
 	private CANTalon rightCAN2;
 	private RobotDrive drive;
+
+	private BallElevator ballElevator;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -51,6 +54,8 @@ public class Robot extends IterativeRobot {
 		rightCAN2 = new CANTalon(4);
 		drive = new RobotDrive(leftCAN1, leftCAN2, rightCAN1, rightCAN2);
 		drive.setExpiration(0.1f);
+
+		ballElevator = new BallElevator();
 	}
 
 	/**
@@ -100,6 +105,12 @@ public class Robot extends IterativeRobot {
 			//do target aiming here
 		} else{
 			//Regular teleop code
+		}
+
+		if(controller.getLeftTrigger() > 0){
+			ballElevator.set(-0.7f, 1f);
+		} else{
+			ballElevator.set(0f, 0f);
 		}
 
 		//Driving
