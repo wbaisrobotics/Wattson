@@ -23,6 +23,8 @@ public class Robot extends IterativeRobot {
 	public final double PERIODIC_DELAY = 0.005f;
 	private Timer timer;
 
+	private Controller controller;
+
 	private CANTalon leftCAN1;
 	private CANTalon leftCAN2;
 	private CANTalon rightCAN1;
@@ -40,6 +42,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 
 		timer = new Timer();
+
+		controller = new Controller();
 
 		leftCAN1 = new CANTalon(1);
 		leftCAN2 = new CANTalon(2);
