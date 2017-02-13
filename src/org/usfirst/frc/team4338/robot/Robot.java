@@ -1,6 +1,8 @@
 package org.usfirst.frc.team4338.robot;
 
+import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,6 +23,12 @@ public class Robot extends IterativeRobot {
 	public final double PERIODIC_DELAY = 0.005f;
 	private Timer timer;
 
+	private CANTalon leftCAN1;
+	private CANTalon leftCAN2;
+	private CANTalon rightCAN1;
+	private CANTalon rightCAN2;
+	private RobotDrive drive;
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -32,6 +40,13 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 
 		timer = new Timer();
+
+		leftCAN1 = new CANTalon(1);
+		leftCAN2 = new CANTalon(2);
+		rightCAN1 = new CANTalon(3);
+		rightCAN2 = new CANTalon(4);
+		drive = new RobotDrive(leftCAN1, leftCAN2, rightCAN1, rightCAN2);
+		drive.setExpiration(0.1f);
 	}
 
 	/**
@@ -82,6 +97,13 @@ public class Robot extends IterativeRobot {
 		} else{
 			//Regular teleop code
 		}
+
+		//Driving
+		double x = controller.getRightJoyX();
+		x = 0.55 * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
+		double y = controller.getRightJoyY();
+		y = 0.6 * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
+		drive.tankDrive(-y - x, -y + x);
 
 		Timer.delay(PERIODIC_DELAY);
 	}
