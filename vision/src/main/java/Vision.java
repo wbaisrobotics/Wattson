@@ -59,9 +59,7 @@ public class Vision{
 
 		//Initialize Camera
 		camera = new UsbCamera("CoprocessorCamera", 0);
-		camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
-		camera.setResolution(width, height);
-		camera.setFPS(fps);
+		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, fps);
 
 		//Initialize cv sink and source
 		cvSink = new CvSink("CV Image Grabber");
