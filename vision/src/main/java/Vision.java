@@ -200,6 +200,8 @@ public class Vision{
 
 			lower = new Scalar(sd.getNumber("lowerH", 0), sd.getNumber("lowerS", 0), sd.getNumber("lowerV", 0));
 			upper = new Scalar(sd.getNumber("upperH", 0), sd.getNumber("upperS", 0), sd.getNumber("upperV", 0));
+			System.out.println("L:" + lower);
+			System.out.println("U:" + upper);
 
 			//Convert to HSV for easier filtering
 			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
