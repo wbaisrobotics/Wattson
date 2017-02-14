@@ -50,12 +50,12 @@ public class Vision{
 		NetworkTable.setTeam(4338);
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
-		sd.putNumber("lowerH", 0);
-		sd.putNumber("lowerS", 0);
-		sd.putNumber("lowerV", 0);
-		sd.putNumber("upperH", 0);
-		sd.putNumber("upperS", 0);
-		sd.putNumber("upperV", 0);
+		sd.putNumber("lowerH", 80);
+		sd.putNumber("lowerS", 10);
+		sd.putNumber("lowerV", 254);
+		sd.putNumber("upperH", 90);
+		sd.putNumber("upperS", 255);
+		sd.putNumber("upperV", 255);
 
 		//Initialize Camera
 		camera = new UsbCamera("CoprocessorCamera", 0);
