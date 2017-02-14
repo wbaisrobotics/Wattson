@@ -50,6 +50,12 @@ public class Vision{
 		NetworkTable.setTeam(4338);
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
+		sd.putNumber("lowerH", 0);
+		sd.putNumber("lowerS", 0);
+		sd.putNumber("lowerV", 0);
+		sd.putNumber("upperH", 0);
+		sd.putNumber("upperS", 0);
+		sd.putNumber("upperV", 0);
 
 		//Initialize Camera
 		camera = new UsbCamera("CoprocessorCamera", 0);
@@ -173,8 +179,8 @@ public class Vision{
 		Mat hsv = new Mat();
 
 		//Range to filter
-		Scalar lower = new Scalar(sd.getNumber("lowerH", 0), sd.getNumber("lowerS", 0), sd.getNumber("lowerV", 0));
-		Scalar upper = new Scalar(sd.getNumber("upperH", 0), sd.getNumber("upperS", 0), sd.getNumber("upperV", 0));
+		Scalar lower;
+		Scalar upper;
 
 		//Kernel size to blur with
 		Size blurAmount = new Size(5, 5);
@@ -191,6 +197,9 @@ public class Vision{
 			// Just skip and continue
 			long frameTime = cvSink.grabFrame(frame);
 			if (frameTime == 0) continue;
+
+			lower = new Scalar(sd.getNumber("lowerH", 0), sd.getNumber("lowerS", 0), sd.getNumber("lowerV", 0));
+			upper = new Scalar(sd.getNumber("upperH", 0), sd.getNumber("upperS", 0), sd.getNumber("upperV", 0));
 
 			//Convert to HSV for easier filtering
 			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
