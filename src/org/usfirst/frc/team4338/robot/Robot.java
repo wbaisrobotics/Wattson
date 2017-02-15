@@ -33,6 +33,7 @@ public class Robot extends IterativeRobot {
 	private RobotDrive drive;
 
 	private BallElevator ballElevator;
+	private Shooter shooter;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -56,6 +57,7 @@ public class Robot extends IterativeRobot {
 		drive.setExpiration(0.1f);
 
 		ballElevator = new BallElevator();
+		shooter = new Shooter();
 	}
 
 	/**
@@ -101,16 +103,26 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		/*
 		if(SmartDashboard.getBoolean("targetExists", false)){
 			//do target aiming here
 		} else{
 			//Regular teleop code
 		}
+		*/
 
+		//Ball elevator
 		if(controller.getLeftTrigger() > 0){
-			ballElevator.set(-0.7f, -1f);
+			ballElevator.set(-0.3f, -1f); //-0.3f?
 		} else{
 			ballElevator.set(0f, 0f);
+		}
+
+		//Shooting
+		if(controller.getLeftTrigger() > 0){
+			shooter.set(0.7f, 1f); //0.7f?
+		} else{
+			shooter.set(0f, 0f);
 		}
 
 		//Driving
