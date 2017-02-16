@@ -50,6 +50,7 @@ public class Vision{
 		NetworkTable.setTeam(4338);
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
+		//Mess with these values!
 		sd.putNumber("lowerH", 80);
 		sd.putNumber("lowerS", 10);
 		sd.putNumber("lowerV", 254);
@@ -74,7 +75,7 @@ public class Vision{
 		cvStream = new MjpegServer("CV Server", cvStreamPort);
 		cvStream.setSource(cvSource);
 	}
-	
+
 	/*
 	public void processBoiler(){
 		Mat frame = new Mat();
