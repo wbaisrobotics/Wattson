@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4338.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -21,6 +23,12 @@ public class Robot extends IterativeRobot {
 	public final double PERIODIC_DELAY = 0.005f;
 	private Timer timer;
 
+	private Controller controller;
+
+	private Compressor compressor;
+	private DoubleSolenoid left;
+	private DoubleSolenoid right;
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -32,6 +40,13 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 
 		timer = new Timer();
+
+		controller = new Controller(0);
+
+		compressor = new Compressor(0);
+		compressor.setClosedLoopControl(true);
+		left = new DoubleSolenoid(0, 1);
+		right = new DoubleSolenoid(2, 3);
 	}
 
 	/**
@@ -77,10 +92,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		if(SmartDashboard.getBoolean("targetExists", false)){
-			//do target aiming here
-		} else{
-			//Regular teleop code
+		if(controller.getButtonA()){
+			left.set(DoubleSolenoid.Value.kReverse);
+			right.set(DoubleSolenoid.Value.kReverse);
+		}
+		if(controller.getButtonB()){
+			left.set(DoubleSolenoid.Value.kForward);
+			right.set(DoubleSolenoid.Value.kForward);
 		}
 
 		Timer.delay(PERIODIC_DELAY);
