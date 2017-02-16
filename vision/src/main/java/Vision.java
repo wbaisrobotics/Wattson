@@ -74,20 +74,7 @@ public class Vision{
 		cvStream = new MjpegServer("CV Server", cvStreamPort);
 		cvStream.setSource(cvSource);
 	}
-
-	/*
-	TODO work on identifying targets not just the largest contour
-	http://wpilib.screenstepslive.com/s/4485/m/24194/l/288985-identifying-and-processing-the-targets
-
-	TODO:
-		implement sorting contours by area size, not just the largest
-			needs to be as fast as possible
-			quicksort?
-		Look through sorted list of contours for potential targets
-			target based on aspect ratio and size?
-			to find the two tape bands on the boiler (2 contours)
-		Larger bounding box encompassing the two target contours??
-	*/
+	
 	/*
 	public void processBoiler(){
 		Mat frame = new Mat();
