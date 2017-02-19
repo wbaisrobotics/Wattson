@@ -26,8 +26,7 @@ public class Robot extends IterativeRobot {
 	private Controller controller;
 
 	private Compressor compressor;
-	private DoubleSolenoid left;
-	private DoubleSolenoid right;
+	private DoubleSolenoid pistons;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -45,8 +44,7 @@ public class Robot extends IterativeRobot {
 
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
-		left = new DoubleSolenoid(0, 1);
-		right = new DoubleSolenoid(2, 3);
+		pistons = new DoubleSolenoid(0, 1);
 	}
 
 	/**
@@ -93,12 +91,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		if(controller.getButtonA()){
-			left.set(DoubleSolenoid.Value.kReverse);
-			right.set(DoubleSolenoid.Value.kReverse);
+			pistons.set(DoubleSolenoid.Value.kForward);
 		}
 		if(controller.getButtonB()){
-			left.set(DoubleSolenoid.Value.kForward);
-			right.set(DoubleSolenoid.Value.kForward);
+			pistons.set(DoubleSolenoid.Value.kReverse);
 		}
 
 		Timer.delay(PERIODIC_DELAY);
