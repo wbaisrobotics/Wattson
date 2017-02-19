@@ -1,6 +1,9 @@
 package org.usfirst.frc.team4338.robot;
 
 import com.ctre.CANTalon;
+
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
@@ -24,8 +27,12 @@ public class Robot extends IterativeRobot {
 	private Timer timer;
 
 	private Controller controller;
+	
+	private Compressor compressor;
 
 	//Drive
+	private DoubleSolenoid leftShifter;
+	private DoubleSolenoid rightShifter;
 	private CANTalon leftCAN1;
 	private CANTalon leftCAN2;
 	private CANTalon rightCAN1;
@@ -34,6 +41,7 @@ public class Robot extends IterativeRobot {
 
 	private BallElevator ballElevator;
 	private Shooter shooter;
+	private DoubleSolenoid gearCatcher;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -48,7 +56,12 @@ public class Robot extends IterativeRobot {
 		timer = new Timer();
 
 		controller = new Controller(0);
+		
+		compressor = new Compressor(0);
+		compressor.setClosedLoopControl(true);
 
+		leftShifter = new DoubleSolenoid(1, 6);
+		rightShifter = new DoubleSolenoid(2, 5);
 		leftCAN1 = new CANTalon(1);
 		leftCAN2 = new CANTalon(2);
 		rightCAN1 = new CANTalon(3);
@@ -58,6 +71,7 @@ public class Robot extends IterativeRobot {
 
 		ballElevator = new BallElevator();
 		shooter = new Shooter();
+		gearCatcher = new DoubleSolenoid(0, 7);
 	}
 
 	/**
@@ -126,6 +140,12 @@ public class Robot extends IterativeRobot {
 		}
 
 		//Driving
+		if(controller.getButtonRS()){
+			shiftHigh();
+		} else{
+			shiftLow();
+		}
+		
 		double x = controller.getRightJoyX();
 		x = 0.55 * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
 		double y = controller.getRightJoyY();
@@ -133,6 +153,16 @@ public class Robot extends IterativeRobot {
 		drive.tankDrive(y - x, y + x);
 
 		Timer.delay(PERIODIC_DELAY);
+	}
+	
+	private void shiftHigh(){
+		leftShifter.set(DoubleSolenoid.Value.kForward);
+		rightShifter.set(DoubleSolenoid.Value.kForward);
+	}
+	
+	private void shiftLow(){
+		leftShifter.set(DoubleSolenoid.Value.kReverse);
+		rightShifter.set(DoubleSolenoid.Value.kReverse);
 	}
 
 	/**
