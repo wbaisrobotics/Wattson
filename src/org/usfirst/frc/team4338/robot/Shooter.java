@@ -7,8 +7,8 @@ public class Shooter{
     private Victor feeder;
 
     public Shooter(){
-        wheel = new Victor(2);
-        feeder = new Victor(3);
+        wheel = new Victor(3);
+        feeder = new Victor(4);
     }
 
     public void set(double wheelSpeed, double feederSpeed){

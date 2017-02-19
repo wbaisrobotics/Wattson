@@ -4,15 +4,15 @@ import edu.wpi.first.wpilibj.Victor;
 
 public class BallElevator{
     private Victor sweeper;
-    private Victor elevator;
+    private Victor belt;
 
     public BallElevator(){
-        sweeper = new Victor(0);
-        elevator = new Victor(1);
+        sweeper = new Victor(2);
+        belt = new Victor(1);
     }
 
-    public void set(double sweeperSpeed, double elevatorSpeed){
+    public void set(double sweeperSpeed, double beltSpeed){
         sweeper.set(sweeperSpeed);
-        elevator.set(elevatorSpeed);
+        belt.set(beltSpeed);
     }
 }
