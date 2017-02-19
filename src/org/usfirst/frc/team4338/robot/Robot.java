@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -42,6 +43,7 @@ public class Robot extends IterativeRobot {
 	private BallElevator ballElevator;
 	private Shooter shooter;
 	private DoubleSolenoid gearCatcher;
+	private Victor climber;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -72,6 +74,7 @@ public class Robot extends IterativeRobot {
 		ballElevator = new BallElevator();
 		shooter = new Shooter();
 		gearCatcher = new DoubleSolenoid(0, 7);
+		climber = new Victor(0);
 	}
 
 	/**
@@ -137,6 +140,21 @@ public class Robot extends IterativeRobot {
 			shooter.set(0.7f, 1f); //0.7f?
 		} else{
 			shooter.set(0f, 0f);
+		}
+		
+		//Gear catcher
+		if(controller.getButtonA()){
+			gearCatcher.set(DoubleSolenoid.Value.kForward);
+		}
+		if(controller.getButtonB()){
+			gearCatcher.set(DoubleSolenoid.Value.kReverse);
+		}
+		
+		//Climber
+		if(controller.getPOV() == Controller.POVUP){
+			climber.set(1f);
+		} else if(controller.getPOV() == Controller.POVDOWN){
+			climber.set(-1f);
 		}
 
 		//Driving
