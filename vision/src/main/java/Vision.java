@@ -156,7 +156,17 @@ public class Vision{
 	*/
 
 	private void sortContours(ArrayList<MatOfPoint> contours){
-
+		for(int i = 1; i < contours.size(); i++){
+			int j = i;
+			while(j > 0){
+				if(Imgproc.contourArea(contours.get(j)) > Imgproc.contourArea(contours.get(j-1))){
+					MatOfPoint temp = contours.get(j-1);
+					contours.set(j-1, contours.get(j));
+					contours.set(j, temp);
+				}
+				j--;
+			}
+		}
 	}
 
 	public void processBlue(){
@@ -208,6 +218,12 @@ public class Vision{
 				target = Imgproc.boundingRect(contours.get(0));
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+
+				System.out.print("S(" + contours.size() + "): ");
+				for(MatOfPoint contour : contours){
+					System.out.print(Imgproc.contourArea(contour) + ", ");
+				}
+				System.out.println();
 
 				adjustValue = (target.x + target.width / 2) - width / 2;
 				//Update network table
