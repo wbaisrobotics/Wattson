@@ -192,8 +192,10 @@ public class Vision{
 			}
 		}
 
-		for(int i = first; i <= last; i++){
-			list.set(i, mergedList.get(i));
+		int listIndex = first;
+		for(int i = 0; i <= mergedList.size(); i++){
+			list.set(listIndex, mergedList.get(i));
+			listIndex++;
 		}
 	}
 
