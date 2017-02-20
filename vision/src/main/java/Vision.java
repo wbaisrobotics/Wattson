@@ -197,11 +197,6 @@ public class Vision{
 		}
 	}
 
-	public void processGear(){
-		Mat frame = new Mat();
-		Mat hsv = new Mat();
-	}
-
 	public void processBlue(){
 		// All Mats and Lists should be stored outside the loop to avoid allocations
 		// as they are expensive to create
@@ -247,7 +242,11 @@ public class Vision{
 
 			//Find largest contour
 			if(contours.size() > 0){
-				target = findLargestContour(contours);
+				sortContours(contours, 0, contours.size() - 1);
+				target = Imgproc.boundingRect(contours.get(0));
+				Imgproc.drawContours(hsv, contours, -1, contourColor);
+				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+				target = Imgproc.boundingRect(contours.get(1));
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 
@@ -259,21 +258,6 @@ public class Vision{
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
 		}
-	}
-
-	private Rect findLargestContour(ArrayList<MatOfPoint> contours){
-		double largestArea = Imgproc.contourArea(contours.get(0));
-		int largestIndex = 0;
-
-		for(int i = 1; i < contours.size(); i++){
-			double nextArea = Imgproc.contourArea(contours.get(i));
-			if(nextArea > largestArea){
-				largestArea = nextArea;
-				largestIndex = i;
-			}
-		}
-
-		return Imgproc.boundingRect(contours.get(largestIndex));
 	}
 
 	public static void main(String[] args){
