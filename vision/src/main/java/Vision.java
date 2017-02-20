@@ -158,7 +158,7 @@ public class Vision{
 	private void sortContours(ArrayList<MatOfPoint> list, int first, int last){
 		if(first == last){
 		} else if(last - first == 1){
-			if(list.get(last) > list.get(first)){ //Need to compare area not MatOfPoint
+			if(Imgproc.contourArea(list.get(last)) > Imgproc.contourArea(list.get(first))){
 				MatOfPoint temp = list.get(first);
 				list.set(first, list.get(last));
 				list.set(last, temp);
@@ -183,7 +183,7 @@ public class Vision{
 			} else if(pointerB > last){
 				mergedList.add(list.get(pointerA));
 				pointerA++;
-			} else if(list.get(pointerA) > list.get(pointerB)){ //Need to compare areas not MatOfPoint
+			} else if(Imgproc.contourArea(list.get(pointerA)) > Imgproc.contourArea(list.get(pointerB))){
 				mergedList.add(list.get(i));
 				pointerA++;
 			} else{
