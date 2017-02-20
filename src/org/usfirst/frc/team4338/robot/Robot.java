@@ -42,7 +42,7 @@ public class Robot extends IterativeRobot {
 
 	private BallElevator ballElevator;
 	private Shooter shooter;
-	private DoubleSolenoid gearCatcher;
+	private GearCatcher gearCatcher;
 	private Victor climber;
 
 	/**
@@ -73,7 +73,7 @@ public class Robot extends IterativeRobot {
 
 		ballElevator = new BallElevator();
 		shooter = new Shooter();
-		gearCatcher = new DoubleSolenoid(0, 7);
+		gearCatcher = new GearCatcher();
 		climber = new Victor(0);
 	}
 
@@ -105,9 +105,17 @@ public class Robot extends IterativeRobot {
 			case customAuto: //Custom autonomous program
 				break;
 			case defaultAuto: //Default autonomous program
+				gearTest();
 				break;
 			default:
 				break;
+		}
+	}
+
+	public void gearTest(){
+		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		if(adjustValue != -1000){ //If the target exists
+			drive.tankDrive(0.2f * adjustValue, 0.2f * -adjustValue);
 		}
 	}
 
@@ -144,10 +152,10 @@ public class Robot extends IterativeRobot {
 
 		//Gear catcher
 		if(controller.getButtonA()){
-			gearCatcher.set(DoubleSolenoid.Value.kForward);
+			gearCatcher.open();
 		}
 		if(controller.getButtonB()){
-			gearCatcher.set(DoubleSolenoid.Value.kReverse);
+			gearCatcher.close();
 		}
 
 		//Climber
