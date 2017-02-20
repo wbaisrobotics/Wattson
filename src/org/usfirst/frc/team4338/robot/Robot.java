@@ -28,8 +28,8 @@ public class Robot extends IterativeRobot {
 	private Timer timer;
 
 	private Controller controller;
-
 	private Compressor compressor;
+	private ADXRS450_Gyro gyro;
 
 	//Drive
 	private DoubleSolenoid leftShifter;
@@ -58,9 +58,9 @@ public class Robot extends IterativeRobot {
 		timer = new Timer();
 
 		controller = new Controller(0);
-
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
+		gyro = new ADXRS450_Gyro();
 
 		leftShifter = new DoubleSolenoid(1, 6);
 		rightShifter = new DoubleSolenoid(2, 5);
@@ -94,6 +94,8 @@ public class Robot extends IterativeRobot {
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
+
+		gyro.reset();
 	}
 
 	/**
