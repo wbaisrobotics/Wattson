@@ -201,18 +201,43 @@ public class Vision{
 			//Find largest contour
 			if(contours.size() > 0){
 				sortContours(contours);
-				target = Imgproc.boundingRect(contours.get(0)); //Largest contour
+				target = findGearTarget(contours);
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+
+				if(target != null){ //Draw target if it exists and update adjust value
+					Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+					adjustValue = (target.x + target.width / 2) - width / 2;
+				} else{
+					System.out.println("Error: could not find gear target");
+					adjustValue = -1000; //This means does not exist
+				}
 
 				//Update network table
-				adjustValue = (target.x + target.width / 2) - width / 2;
 				sd.putNumber("adjustValue", adjustValue);
 			}
 
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
 		}
+	}
+
+	private Rect findGearTarget(ArrayList<MatOfPoint> contours){
+		double targetAspectRatio = 2f / 5f;
+		Rect target = null;
+		Rect left = null;
+		Rect right = null;
+
+		for(MatOfPoint contour : contours){
+			Rect temp = Imgproc.boundingRect(contour);
+			if(temp.width / temp.height == targetAspectRatio){ //CHANGE THIS!
+				left = temp;
+			}
+		}
+		if(left != null && right != null){
+			target = new Rect(new Point(left.x, left.y), new Point(right.x + right.width, right.y + right.height));
+		}
+
+		return target;
 	}
 
 	private void sortContours(ArrayList<MatOfPoint> contours){
