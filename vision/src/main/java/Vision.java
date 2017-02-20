@@ -155,48 +155,8 @@ public class Vision{
 	}
 	*/
 
-	private void sortContours(ArrayList<MatOfPoint> list, int first, int last){
-		if(first == last){
-		} else if(last - first == 1){
-			if(Imgproc.contourArea(list.get(last)) > Imgproc.contourArea(list.get(first))){
-				MatOfPoint temp = list.get(first);
-				list.set(first, list.get(last));
-				list.set(last, temp);
-			}
-		} else{
-			int mid = (first + last) / 2;
-			sortContours(list, first, mid);
-			sortContours(list, mid + 1, last);
-			merge(list, first, mid, last);
-		}
-	}
+	private void sortContours(ArrayList<MatOfPoint> contours){
 
-	private void merge(ArrayList<MatOfPoint> list, int first, int mid, int last){
-		ArrayList<MatOfPoint> mergedList = new ArrayList<MatOfPoint>();
-		int pointerA = first;
-		int pointerB = mid + 1;
-
-		for(int i = 0; i < last - first + 1; i++){
-			if(pointerA > mid){
-				mergedList.add(list.get(pointerB));
-				pointerB++;
-			} else if(pointerB > last){
-				mergedList.add(list.get(pointerA));
-				pointerA++;
-			} else if(Imgproc.contourArea(list.get(pointerA)) > Imgproc.contourArea(list.get(pointerB))){
-				mergedList.add(list.get(i));
-				pointerA++;
-			} else{
-				mergedList.add(list.get(pointerB));
-				pointerB++;
-			}
-		}
-
-		int listIndex = first;
-		for(int i = 0; i <= mergedList.size(); i++){
-			list.set(listIndex, mergedList.get(i));
-			listIndex++;
-		}
 	}
 
 	public void processBlue(){
@@ -244,11 +204,8 @@ public class Vision{
 
 			//Find largest contour
 			if(contours.size() > 0){
-				sortContours(contours, 0, contours.size() - 1);
+				sortContours(contours);
 				target = Imgproc.boundingRect(contours.get(0));
-				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
-				target = Imgproc.boundingRect(contours.get(1));
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 
