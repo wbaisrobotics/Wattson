@@ -19,4 +19,8 @@ public class GearCatcher{
     public void close(){
         pistons.set(DoubleSolenoid.Value.kReverse);
     }
+
+    public boolean getTriggerState(){
+        return trigger.get();
+    }
 }
