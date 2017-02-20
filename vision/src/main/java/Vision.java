@@ -155,20 +155,6 @@ public class Vision{
 	}
 	*/
 
-	private void sortContours(ArrayList<MatOfPoint> contours){
-		for(int i = 1; i < contours.size(); i++){
-			int j = i;
-			while(j > 0){
-				if(Imgproc.contourArea(contours.get(j)) > Imgproc.contourArea(contours.get(j-1))){
-					MatOfPoint temp = contours.get(j-1);
-					contours.set(j-1, contours.get(j));
-					contours.set(j, temp);
-				}
-				j--;
-			}
-		}
-	}
-
 	public void processBlue(){
 		// All Mats and Lists should be stored outside the loop to avoid allocations
 		// as they are expensive to create
@@ -232,6 +218,20 @@ public class Vision{
 
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
+		}
+	}
+
+	private void sortContours(ArrayList<MatOfPoint> contours){
+		for(int i = 1; i < contours.size(); i++){
+			int j = i;
+			while(j > 0){
+				if(Imgproc.contourArea(contours.get(j)) > Imgproc.contourArea(contours.get(j-1))){
+					MatOfPoint temp = contours.get(j-1);
+					contours.set(j-1, contours.get(j));
+					contours.set(j, temp);
+				}
+				j--;
+			}
 		}
 	}
 
