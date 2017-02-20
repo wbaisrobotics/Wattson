@@ -11,7 +11,7 @@ public class Controller {
 	public static final int POVLEFT = 90;
 	public static final int POVDOWN = 180;
 	public static final int POVRIGHT = 270;
-
+	
 	private DriverStation ds;
 	private final int port;
 

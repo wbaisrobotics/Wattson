@@ -50,12 +50,19 @@ public class Vision{
 		NetworkTable.setTeam(4338);
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
+		//Mess with these values!
+		sd.putNumber("lowerH", 80);
+		sd.putNumber("lowerS", 10);
+		sd.putNumber("lowerV", 254);
+		sd.putNumber("upperH", 90);
+		sd.putNumber("upperS", 255);
+		sd.putNumber("upperV", 255);
 
 		//Initialize Camera
 		camera = new UsbCamera("CoprocessorCamera", 0);
-		camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
-		camera.setResolution(width, height);
-		camera.setFPS(fps);
+		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, fps);
+		camera.setBrightness(0);
+		camera.setExposureManual(0);
 
 		//Initialize cv sink and source
 		cvSink = new CvSink("CV Image Grabber");
@@ -70,18 +77,6 @@ public class Vision{
 	}
 
 	/*
-	TODO work on identifying targets not just the largest contour
-	http://wpilib.screenstepslive.com/s/4485/m/24194/l/288985-identifying-and-processing-the-targets
-
-	TODO:
-		implement sorting contours by area size, not just the largest
-			needs to be as fast as possible
-			quicksort?
-		Look through sorted list of contours for potential targets
-			target based on aspect ratio and size?
-			to find the two tape bands on the boiler (2 contours)
-		Larger bounding box encompassing the two target contours??
-	*/
 	public void processBoiler(){
 		Mat frame = new Mat();
 		Mat hsv = new Mat();
@@ -120,21 +115,21 @@ public class Vision{
 			//Find target
 			if(contours.size() > 0){
 				//Merge sort the contours
-				sortContours(contours);
+				sortContours(contours, 0, contours.size() - 1);
 				//Find the matching target
 				target = findBoilerTarget(contours);
 
 				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				if(target.exists()){ //Draw target if it exists
+				if(target.doesExist()){ //Draw target if it exists
 					for(int i = 0; i < 4; i++){
-						//Fix this line
-						Improc.line(hsv, targetVerts[i], targetVerts[(j + 1) % 4], targetColor);
+						//Fix this line, targetVerts out of scope!
+						Imgproc.line(hsv, targetVerts[i], targetVerts[(i + 1) % 4], target.getColor());
 					}
 				}
 
 				//Update network table with the target data
-				sd.putBoolean("targetExists", target.exists);
+				sd.putBoolean("targetExists", target.doesExist());
 				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
 			}
 
@@ -143,6 +138,7 @@ public class Vision{
 		}
 	}
 
+	//NOT DONE
 	private BoilerTarget findBoilerTarget(ArrayList<MatOfPoint> contours){
 		BoilerTarget target;
 		Point[] targetVerts = new Point[4];
@@ -150,28 +146,24 @@ public class Vision{
 		double fudge = 0.1f; //Maybe ~10% uncertainty
 
 		for(MatOfPoint contour : contours){
-			//target = Improc.minAreaRect(contour);
+			//target = Imgproc.minAreaRect(contour);
 			//target.points(targetVerts);
 			//target.getAspectRatio();
 		}
 
 		return target;
 	}
+	*/
 
 	public void processGear(){
-		Mat frame = new Mat();
-		Mat hsv = new Mat();
-	}
-
-	public void processTest(){
 		// All Mats and Lists should be stored outside the loop to avoid allocations
 		// as they are expensive to create
 		Mat frame = new Mat();
 		Mat hsv = new Mat();
 
 		//Range to filter
-		Scalar lower = new Scalar(110, 50, 50);
-		Scalar upper = new Scalar(130, 255, 255);
+		Scalar lower;
+		Scalar upper;
 
 		//Kernel size to blur with
 		Size blurAmount = new Size(5, 5);
@@ -189,6 +181,11 @@ public class Vision{
 			long frameTime = cvSink.grabFrame(frame);
 			if (frameTime == 0) continue;
 
+			lower = new Scalar(sd.getNumber("lowerH", 0), sd.getNumber("lowerS", 0), sd.getNumber("lowerV", 0));
+			upper = new Scalar(sd.getNumber("upperH", 0), sd.getNumber("upperS", 0), sd.getNumber("upperV", 0));
+			//System.out.println("L:" + lower);
+			//System.out.println("U:" + upper);
+
 			//Convert to HSV for easier filtering
 			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
 			//Filter image by color
@@ -203,11 +200,18 @@ public class Vision{
 
 			//Find largest contour
 			if(contours.size() > 0){
-				target = findLargestContour(contours);
+				sortContours(contours);
+				target = findGearTarget(contours);
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 
-				adjustValue = (target.x + target.width / 2) - width / 2;
+				if(target != null){ //Draw target if it exists and update adjust value
+					Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+					adjustValue = (target.x + target.width / 2) - width / 2;
+				} else{
+					System.out.println("Error: could not find gear target");
+					adjustValue = -1000; //This means does not exist
+				}
+
 				//Update network table
 				sd.putNumber("adjustValue", adjustValue);
 			}
@@ -217,72 +221,41 @@ public class Vision{
 		}
 	}
 
-	private void sortContours(ArrayList<MatOfPoint> list, int first, int last){
-		if(first == last){
-		} else if(last - first == 1){
-			if(list.get(last) > list.get(first)){ //Put greatest value first for greatest to least
-				int temp = list.get(first);
-				list.set(first, last);
-				list.set(last, temp);
+	private Rect findGearTarget(ArrayList<MatOfPoint> contours){
+		double targetAspectRatio = 2f / 5f;
+		Rect target = null;
+		Rect left = null;
+		Rect right = null;
+
+		for(MatOfPoint contour : contours){
+			Rect temp = Imgproc.boundingRect(contour);
+			if(temp.width / temp.height == targetAspectRatio){ //CHANGE THIS!
+				left = temp;
 			}
-		} else{
-			int mid = (first + last) / 2;
-			sortContours(list, first, mid);
-			sortContours(list, mid + 1, last);
-			sortedList = merge(list, first, mid, last);
 		}
+		if(left != null && right != null){
+			target = new Rect(new Point(left.x, left.y), new Point(right.x + right.width, right.y + right.height));
+		}
+
+		return target;
 	}
 
-	private void merge(ArrayList<MatOfPoint> list, int first, int mid, int last){
-		ArrayList<MatOfPoint> mergedList = new ArrayList<MatOfPoint>();
-		int pointerA = first;
-		int pointerB = mid + 1;
-
-		for(int i = 0; i < last - first + 1; i++){
-			if(aDone){
-				mergedList.add(list.get(pointerB));
-				pointerB++;
-			} else if(bDone){
-				mergedList.add(list.get(pointerA));
-				pointerA++;
-			} else if(list.get(pointerA) > list.get(pointerB)){
-				mergedList.add(list.get(i));
-				pointerA++;
-			} else{
-				mergedList.add(list.get(pointerB));
-				pointerB++;
-			}
-
-			if(pointerA > mid){
-				aDone = true;
-			}
-			if(pointerB > last){
-				bDone = true;
-			}
-		}
-
-		for(int i = first; i <= last; i++){
-			list.set(i, mergedList.get(i));
-		}
-	}
-
-	private Rect findLargestContour(ArrayList<MatOfPoint> contours){
-		double largestArea = Imgproc.contourArea(contours.get(0));
-		int largestIndex = 0;
-
+	private void sortContours(ArrayList<MatOfPoint> contours){
 		for(int i = 1; i < contours.size(); i++){
-			double nextArea = Imgproc.contourArea(contours.get(i));
-			if(nextArea > largestArea){
-				largestArea = nextArea;
-				largestIndex = i;
+			int j = i;
+			while(j > 0){
+				if(Imgproc.contourArea(contours.get(j)) > Imgproc.contourArea(contours.get(j-1))){
+					MatOfPoint temp = contours.get(j-1);
+					contours.set(j-1, contours.get(j));
+					contours.set(j, temp);
+				}
+				j--;
 			}
 		}
-
-		return Imgproc.boundingRect(contours.get(largestIndex));
 	}
 
 	public static void main(String[] args){
 		Vision vision = new Vision();
-		vision.processTest();
+		vision.processGear();
 	}
 }

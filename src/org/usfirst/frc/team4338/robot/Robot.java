@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot {
 	private Timer timer;
 
 	private Controller controller;
-	
+
 	private Compressor compressor;
 
 	//Drive
@@ -58,7 +58,7 @@ public class Robot extends IterativeRobot {
 		timer = new Timer();
 
 		controller = new Controller(0);
-		
+
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
 
@@ -141,7 +141,7 @@ public class Robot extends IterativeRobot {
 		} else{
 			shooter.set(0f, 0f);
 		}
-		
+
 		//Gear catcher
 		if(controller.getButtonA()){
 			gearCatcher.set(DoubleSolenoid.Value.kForward);
@@ -149,7 +149,7 @@ public class Robot extends IterativeRobot {
 		if(controller.getButtonB()){
 			gearCatcher.set(DoubleSolenoid.Value.kReverse);
 		}
-		
+
 		//Climber
 		if(controller.getPOV() == Controller.POVUP){
 			climber.set(1f);
@@ -163,7 +163,7 @@ public class Robot extends IterativeRobot {
 		} else{
 			shiftLow();
 		}
-		
+
 		double x = controller.getRightJoyX();
 		x = 0.55 * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
 		double y = controller.getRightJoyY();
@@ -172,12 +172,12 @@ public class Robot extends IterativeRobot {
 
 		Timer.delay(PERIODIC_DELAY);
 	}
-	
+
 	private void shiftHigh(){
 		leftShifter.set(DoubleSolenoid.Value.kForward);
 		rightShifter.set(DoubleSolenoid.Value.kForward);
 	}
-	
+
 	private void shiftLow(){
 		leftShifter.set(DoubleSolenoid.Value.kReverse);
 		rightShifter.set(DoubleSolenoid.Value.kReverse);
