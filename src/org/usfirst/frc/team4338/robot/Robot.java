@@ -117,6 +117,14 @@ public class Robot extends IterativeRobot {
 		if(adjustValue != -1000){ //If the target exists
 			drive.tankDrive(0.2f * adjustValue, 0.2f * -adjustValue);
 		}
+
+		if(gearCatcher.getTriggerState()){
+			double start = Timer.getFPGATimestamp();
+			while(Timer.getFPGATimestamp() - start < 1){
+				drive.tankDrive(-0.2f, -0.2f);
+				Timer.delay(PERIODIC_DELAY);
+			}
+		}
 	}
 
 	@Override
