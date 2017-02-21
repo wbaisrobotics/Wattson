@@ -133,12 +133,12 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void autoMove(double speed, double time){
-		double bearing = gyro.getAngle();
+		gyro.reset();
 		double start = Timer.getFPGATimestamp();
 		
 		while(Timer.getFPGATimestamp() - start < time){
 			angle = gyro.getAngle();
-			drive.tankDrive(speed - (angle - bearing) * kp, speed + (angle - bearing) * kp);
+			drive.tankDrive(speed - angle * kp, speed + angle * kp);
 			Timer.delay(PERIODIC_DELAY);
 		}
 		drive.tankDrive(0f, 0f);
