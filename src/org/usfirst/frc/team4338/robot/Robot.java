@@ -3,6 +3,7 @@ package org.usfirst.frc.team4338.robot;
 import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -45,9 +46,12 @@ public class Robot extends IterativeRobot {
 	private RobotDrive drive;
 
 	private BallElevator ballElevator;
+	private BallShelf ballShelf;
 	private Shooter shooter;
 	private GearCatcher gearCatcher;
 	private Victor climber;
+	
+	private AnalogInput gearSonic;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -75,9 +79,12 @@ public class Robot extends IterativeRobot {
 		drive.setExpiration(0.1f);
 
 		ballElevator = new BallElevator();
+		ballShelf = new BallShelf();
 		shooter = new Shooter();
 		gearCatcher = new GearCatcher();
 		climber = new Victor(0);
+		
+		gearSonic = new AnalogInput(2); //Which channel to use?
 	}
 
 	/**
@@ -117,7 +124,7 @@ public class Robot extends IterativeRobot {
 		}
 	}
 
-	public void gearTest(){
+	public void gearTest(){ //Not done
 		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 		if(adjustValue != -1000){ //If the target exists
 			drive.tankDrive(0.2f * adjustValue, 0.2f * -adjustValue);
