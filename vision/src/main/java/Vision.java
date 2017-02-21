@@ -92,19 +92,21 @@ public class Vision{
 	}
 
 	public void process(){
-		updateState();
-		if(state){ //Process Boiler
-			if(rawStream.getSource() != ballCamera){
-				rawStream.setSource(ballCamera);
-				cvSink.setSource(ballCamera);
+		while(true){
+			updateState();
+			if(state){ //Process Boiler
+				if(rawStream.getSource() != ballCamera){
+					rawStream.setSource(ballCamera);
+					cvSink.setSource(ballCamera);
+				}
+				//processBoiler();
+			} else{ //Process Gear
+				if(rawStream.getSource() != gearCamera){
+					rawStream.setSource(gearCamera);
+					cvSink.setSource(gearCamera);
+				}
+				processGear();
 			}
-			//processBoiler();
-		} else{ //Process Gear
-			if(rawStream.getSource() != gearCamera){
-				rawStream.setSource(gearCamera);
-				cvSink.setSource(gearCamera);
-			}
-			processGear();
 		}
 	}
 
