@@ -60,11 +60,11 @@ public class Vision{
 		sd.putNumber("upperV", 255);
 
 		//Initialize cameras
-		gearCamera = new UsbCamera("Gear Camera", 0); //0 or 1?
+		gearCamera = new UsbCamera("Gear Camera", 1); //0 or 1?
 		gearCamera.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, fps);
 		gearCamera.setBrightness(0);
 		gearCamera.setExposureManual(0);
-		ballCamera = new UsbCamera("Ball Camera", 1); //0 or 1?
+		ballCamera = new UsbCamera("Ball Camera", 0); //0 or 1?
 		ballCamera.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, fps);
 		ballCamera.setBrightness(0);
 		ballCamera.setExposureManual(0);
