@@ -52,10 +52,10 @@ public class Vision{
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
 		//Set default filter values FOR TESTING!
-		sd.putNumber("lowerH", 80);
+		sd.putNumber("lowerH", 110);
 		sd.putNumber("lowerS", 10);
-		sd.putNumber("lowerV", 254);
-		sd.putNumber("upperH", 90);
+		sd.putNumber("lowerV", 110);
+		sd.putNumber("upperH", 130);
 		sd.putNumber("upperS", 255);
 		sd.putNumber("upperV", 255);
 
@@ -150,10 +150,10 @@ public class Vision{
 			long frameTime = cvSink.grabFrame(frame);
 			if (frameTime == 0) continue;
 
-			lower = new Scalar(sd.getNumber("lowerH", 0), sd.getNumber("lowerS", 0), sd.getNumber("lowerV", 0));
-			upper = new Scalar(sd.getNumber("upperH", 0), sd.getNumber("upperS", 0), sd.getNumber("upperV", 0));
-			//System.out.println("L:" + lower);
-			//System.out.println("U:" + upper);
+			//lower = new Scalar(sd.getNumber("lowerH", 0), sd.getNumber("lowerS", 0), sd.getNumber("lowerV", 0));
+			//upper = new Scalar(sd.getNumber("upperH", 0), sd.getNumber("upperS", 0), sd.getNumber("upperV", 0));
+			lower = new Scalar(110, 10, 110);
+			upper = new Scalar(130, 255, 255);
 
 			//Convert to HSV for easier filtering
 			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
