@@ -165,7 +165,7 @@ public class Vision{
 		double adjustValue;
 
 		//Processing loop
-		while(true){
+		while(true){ //Need to add a way to exit this loop!!!
 			// Grab a frame. If it has a frame time of 0, there was an error.
 			// Just skip and continue
 			long frameTime = cvSink.grabFrame(frame);
