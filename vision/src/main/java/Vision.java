@@ -4,7 +4,6 @@ import edu.wpi.cscore.*;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
-import java.util.List;
 import java.util.ArrayList;
 
 /*
@@ -39,6 +38,8 @@ public class Vision{
 	private CvSink cvSink;
 	//Cv source to output to the cv stream
 	private CvSource cvSource;
+	
+	private String state = "processGear";
 
 	public Vision(){
 		// Loads our OpenCV library. This MUST be included
@@ -103,15 +104,18 @@ public class Vision{
 				break;
 		}
 	}
-
-	public void process(){
-		String state;
+	
+	private void updateState(){
 		try{
 			state = sd.getString("state", "processGear"); //Default to processGear
 		} catch(TableKeyNotDefinedException e){
 			System.out.println("Error: key \"state\" not found");
 			e.printStackTrace();
 		}
+	}
+
+	public void process(){
+		updateState();
 
 		switch(state){
 			case "processGear":
@@ -165,7 +169,7 @@ public class Vision{
 		double adjustValue;
 
 		//Processing loop
-		while(true){ //Need to add a way to exit this loop!!!
+		while(state.equals("processGear")){ //Need to add a way to exit this loop!!!
 			// Grab a frame. If it has a frame time of 0, there was an error.
 			// Just skip and continue
 			long frameTime = cvSink.grabFrame(frame);
@@ -208,6 +212,8 @@ public class Vision{
 
 			//Put modified cv image on cv source to be streamed
 			cvSource.putFrame(hsv);
+			//Update the state
+			updateState();
 		}
 	}
 
@@ -223,7 +229,7 @@ public class Vision{
 				left = temp;
 			}
 		}
-		if(left != null && right != null){
+		if(left != null && right != null){ //Create the target if the left and right tape is found
 			target = new Rect(new Point(left.x, left.y), new Point(right.x + right.width, right.y + right.height));
 		}
 
@@ -313,6 +319,6 @@ public class Vision{
 
 	public static void main(String[] args){
 		Vision vision = new Vision();
-		vision.processGear();
+		vision.process();
 	}
 }
