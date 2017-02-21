@@ -80,15 +80,29 @@ public class Vision{
 		cvStream.setSource(cvSource);
 	}
 
-	private void switchCamera(){
-		if(rawStream.getSource() == ballCamera){
-			rawStream.setSource(gearCamera);
-			cvSink.setSource(gearCamera);
-		} else if(rawStream.getSource() == gearCamera){
-			rawStream.setSource(ballCamera);
-			cvSink.setSource(ballCamera);
-		} else{
-			System.out.println("ERROR: rawStream source not set.");
+	private void updateCamera(){
+		String camera;
+		try{
+			camera = sd.getString("camera", "ballCamera");
+		} catch(TableKeyNotDefinedException e){
+			System.out.println("Error: key \"camera\" not found");
+			e.printStackTrace();
+		}
+
+		switch(camera){
+			case "ballCamera":
+				rawStream.setSource(ballCamera);
+				cvSink.setSource(ballCamera);
+				break;
+			case "gearCamera":
+				rawStream.setSource(gearCamera);
+				cvSink.setSource(gearCamera);
+				break;
+			default:
+				System.out.println("Falling back to default camera!");
+				rawStream.setSource(ballCamera);
+				cvSink.setSource(ballCamera);
+				break;
 		}
 	}
 
