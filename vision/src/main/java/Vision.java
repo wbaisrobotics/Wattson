@@ -219,17 +219,28 @@ public class Vision{
 
 	private Rect findGearTarget(ArrayList<MatOfPoint> contours){
 		double targetAspectRatio = 2f / 5f;
+		double foundAspectRatio;
+		double fudge = 0.1f;
 		Rect target = null;
 		Rect left = null;
 		Rect right = null;
 
 		for(MatOfPoint contour : contours){
 			Rect temp = Imgproc.boundingRect(contour);
-			if(temp.width / temp.height == targetAspectRatio){ //CHANGE THIS!
-				left = temp;
+			foundAspectRatio = temp.width / temp.height;
+			if(foundAspectRatio < targetAspectRatio * (1f + fudge) && foundAspectRatio > targetAspectRatio * (1f - fudge)){
+				if(left == null){
+					left = temp;
+				} else if(right == null){
+					right = temp;
+				} else{
+					break;
+				}
 			}
 		}
-		if(left != null && right != null){ //Create the target if the left and right tape is found
+		
+		//Create the target if the left and right tape is found
+		if(left != null && right != null){
 			target = new Rect(new Point(left.x, left.y), new Point(right.x + right.width, right.y + right.height));
 		}
 
