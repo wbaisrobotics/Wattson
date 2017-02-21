@@ -143,6 +143,17 @@ public class Robot extends IterativeRobot {
 		}
 		drive.tankDrive(0f, 0f);
 	}
+	
+	private void autoTurn(double turnAngle){ //NOT DONE!
+		gyro.reset();
+		
+		while(angle < turnAngle){ //incorrect
+			angle = gyro.getAngle();
+			drive.tankDrive(angle * kp, angle * kp);
+			Timer.delay(PERIODIC_DELAY);
+		}
+		drive.tankDrive(0f, 0f);
+	}
 
 	@Override
 	public void teleopInit(){
