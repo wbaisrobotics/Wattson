@@ -51,7 +51,7 @@ public class Vision{
 		NetworkTable.setTeam(4338);
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
-		//Set default filter values
+		//Set default filter values FOR TESTING!
 		sd.putNumber("lowerH", 80);
 		sd.putNumber("lowerS", 10);
 		sd.putNumber("lowerV", 254);
@@ -75,6 +75,7 @@ public class Vision{
 		cvSource = new CvSource("CV Image Source", VideoMode.PixelFormat.kMJPEG, width, height, fps);
 
 		//Initialize streams to use gear camera
+		sd.putBoolean("state", false);
 		rawStream = new MjpegServer("Raw Server", rawStreamPort);
 		rawStream.setSource(gearCamera);
 		cvStream = new MjpegServer("CV Server", cvStreamPort);

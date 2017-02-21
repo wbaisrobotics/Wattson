@@ -26,11 +26,14 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> chooser = new SendableChooser<>();
 
 	public final double PERIODIC_DELAY = 0.005f;
-	private Timer timer;
 
 	private Controller controller;
 	private Compressor compressor;
+	
+	//Gyro
 	private ADXRS450_Gyro gyro;
+	private double angle;
+	private double kp = 0.03f;
 
 	//Drive
 	private DoubleSolenoid leftShifter;
@@ -56,11 +59,10 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("My Auto", customAuto);
 		SmartDashboard.putData("Auto choices", chooser);
 
-		timer = new Timer();
-
 		controller = new Controller(0);
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
+		
 		gyro = new ADXRS450_Gyro();
 
 		leftShifter = new DoubleSolenoid(1, 6);
@@ -128,6 +130,18 @@ public class Robot extends IterativeRobot {
 				Timer.delay(PERIODIC_DELAY);
 			}
 		}
+	}
+	
+	private void autoMove(double speed, double time){
+		double bearing = gyro.getAngle();
+		double start = Timer.getFPGATimestamp();
+		
+		while(Timer.getFPGATimestamp() - start < time){
+			angle = gyro.getAngle();
+			drive.tankDrive(speed - (angle - bearing) * kp, speed + (angle - bearing) * kp);
+			Timer.delay(PERIODIC_DELAY);
+		}
+		drive.tankDrive(0f, 0f);
 	}
 
 	@Override
