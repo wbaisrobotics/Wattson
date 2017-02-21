@@ -39,7 +39,7 @@ public class Vision{
 	//Cv source to output to the cv stream
 	private CvSource cvSource;
 	
-	private String state = "processGear";
+	private boolean state = false; //False=gear, true=ball
 
 	public Vision(){
 		// Loads our OpenCV library. This MUST be included
@@ -80,34 +80,10 @@ public class Vision{
 		cvStream = new MjpegServer("CV Server", cvStreamPort);
 		cvStream.setSource(cvSource);
 	}
-
-	private void selectCamera(String camera){
-		switch(camera){
-			case "ballCamera":
-				if(rawStream.getSource() != ballCamera){ //Change the source only if needed
-					rawStream.setSource(ballCamera);
-					cvSink.setSource(ballCamera);
-				}
-				break;
-			case "gearCamera":
-				if(rawStream.getSource() != gearCamera){
-					rawStream.setSource(gearCamera);
-					cvSink.setSource(gearCamera);
-				}
-				break;
-			default:
-				System.out.println("Falling back to default camera!");
-				if(rawStream.getSource() != gearCamera){
-					rawStream.setSource(gearCamera);
-					cvSink.setSource(gearCamera);
-				}
-				break;
-		}
-	}
 	
 	private void updateState(){
 		try{
-			state = sd.getString("state", "processGear"); //Default to processGear
+			state = sd.getBoolean("state", false); //Default to processGear
 		} catch(TableKeyNotDefinedException e){
 			System.out.println("Error: key \"state\" not found");
 			e.printStackTrace();
@@ -116,20 +92,18 @@ public class Vision{
 
 	public void process(){
 		updateState();
-
-		switch(state){
-			case "processGear":
-				selectCamera("gearCamera");
-				processGear();
-				break;
-			/*
-			case "processBoiler":
-				selectCamera("ballCamera");
-				processBoiler();
-				break;
-			*/
-			default:
-				break;
+		if(state){ //Process Boiler
+			if(rawStream.getSource() != ballCamera){
+				rawStream.setSource(ballCamera);
+				cvSink.setSource(ballCamera);
+			}
+			//processBoiler();
+		} else{ //Process Gear
+			if(rawStream.getSource() != gearCamera){
+				rawStream.setSource(gearCamera);
+				cvSink.setSource(gearCamera);
+			}
+			processGear();
 		}
 	}
 
@@ -169,7 +143,7 @@ public class Vision{
 		double adjustValue;
 
 		//Processing loop
-		while(state.equals("processGear")){ //Need to add a way to exit this loop!!!
+		while(!state){
 			// Grab a frame. If it has a frame time of 0, there was an error.
 			// Just skip and continue
 			long frameTime = cvSink.grabFrame(frame);
