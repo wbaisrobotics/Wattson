@@ -20,12 +20,12 @@ import java.util.ArrayList;
 
 public class Vision{
 	private NetworkTable sd;
-	private double adjustValue; //- for left, 0 on, + for right
 
 	//Diagonal fov of 68.5 degrees
-	private UsbCamera camera;
-	private int width = 640;
-	private int height = 480;
+	private UsbCamera gearCamera;
+	private UsbCamera ballCamera;
+	private int width = 640; //Probably change to 320
+	private int height = 480; //Probably change to 240
 	private int fps = 30;
 
 	// This is the network port you want to stream the raw and cv images to
@@ -50,7 +50,7 @@ public class Vision{
 		NetworkTable.setTeam(4338);
 		//Get the SmartDashboard networktable
 		sd = NetworkTable.getTable("SmartDashboard");
-		//Mess with these values!
+		//Set default filter values
 		sd.putNumber("lowerH", 80);
 		sd.putNumber("lowerS", 10);
 		sd.putNumber("lowerV", 254);
@@ -58,22 +58,38 @@ public class Vision{
 		sd.putNumber("upperS", 255);
 		sd.putNumber("upperV", 255);
 
-		//Initialize Camera
-		camera = new UsbCamera("CoprocessorCamera", 0);
-		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, fps);
-		camera.setBrightness(0);
-		camera.setExposureManual(0);
+		//Initialize cameras
+		gearCamera = new UsbCamera("Gear Camera", 0); //0 or 1?
+		gearCamera.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, fps);
+		gearCamera.setBrightness(0);
+		gearCamera.setExposureManual(0);
+		ballCamera = new UsbCamera("Ball Camera", 1); //0 or 1?
+		ballCamera.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, fps);
+		ballCamera.setBrightness(0);
+		ballCamera.setExposureManual(0);
 
-		//Initialize cv sink and source
+		//Initialize cv sink and source to use the ball camera
 		cvSink = new CvSink("CV Image Grabber");
-		cvSink.setSource(camera);
+		cvSink.setSource(ballCamera);
 		cvSource = new CvSource("CV Image Source", VideoMode.PixelFormat.kMJPEG, width, height, fps);
 
-		//Initialize streams
+		//Initialize streams to use ball camera
 		rawStream = new MjpegServer("Raw Server", rawStreamPort);
-		rawStream.setSource(camera);
+		rawStream.setSource(ballCamera);
 		cvStream = new MjpegServer("CV Server", cvStreamPort);
 		cvStream.setSource(cvSource);
+	}
+
+	private void switchCamera(){
+		if(rawStream.getSource() == ballCamera){
+			rawStream.setSource(gearCamera);
+			cvSink.setSource(gearCamera);
+		} else if(rawStream.getSource() == gearCamera){
+			rawStream.setSource(ballCamera);
+			cvSink.setSource(ballCamera);
+		} else{
+			System.out.println("ERROR: rawStream source not set.");
+		}
 	}
 
 	/*
@@ -93,6 +109,8 @@ public class Vision{
 		Scalar contourColor = new Scalar(110, 255, 255);
 
 		BoilerTarget target;
+
+		double adjustValue;
 
 		while(true){
 			// Grab a frame. If it has a frame time of 0, there was an error.
@@ -173,6 +191,8 @@ public class Vision{
 		Scalar contourColor = new Scalar(110, 255, 255);
 		Rect target;
 		Scalar targetColor = new Scalar(255, 255, 255);
+
+		double adjustValue;
 
 		//Processing loop
 		while(true){
