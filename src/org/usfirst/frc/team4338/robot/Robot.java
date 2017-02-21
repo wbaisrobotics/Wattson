@@ -105,6 +105,7 @@ public class Robot extends IterativeRobot {
 		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
 
+		ballShelf.release();
 		gyro.reset();
 	}
 
@@ -145,8 +146,8 @@ public class Robot extends IterativeRobot {
 		
 		while(Timer.getFPGATimestamp() - start < time){
 			angle = gyro.getAngle();
-			//y - x, y + x
-			drive.tankDrive(speed - angle * kp, speed + angle * kp);
+			//y + x, y - x
+			drive.tankDrive(speed + angle * kp, speed - angle * kp);
 			Timer.delay(PERIODIC_DELAY);
 		}
 		drive.tankDrive(0f, 0f);
@@ -157,15 +158,15 @@ public class Robot extends IterativeRobot {
 		angle = gyro.getAngle();
 		
 		if(Math.signum(turnAngle) > 0){ //Turn right
-			while(angle < turnAngle){
+			while(angle < turnAngle - 8){
 				angle = gyro.getAngle();
-				drive.tankDrive(0.2f, -0.2f);
+				drive.tankDrive(-0.5f, 0.5f);
 				Timer.delay(PERIODIC_DELAY);
 			}
 		} else if(Math.signum(turnAngle) < 0){ //Turn left
-			while(angle > turnAngle){
+			while(angle > turnAngle + 8){
 				angle = gyro.getAngle();
-				drive.tankDrive(-0.2f, 0.2f);
+				drive.tankDrive(0.5f, -0.5f);
 				Timer.delay(PERIODIC_DELAY);
 			}
 		}
@@ -188,6 +189,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit(){
+		ballShelf.release();
 		gyro.reset();
 	}
 
@@ -203,24 +205,32 @@ public class Robot extends IterativeRobot {
 			//Regular teleop code
 		}
 		*/
-
-		//Ball elevator
-		if(controller.getLeftTrigger() > 0){
-			ballElevator.set(-0.3f, -1f); //-0.3f?
-		} else{
-			ballElevator.set(0f, 0f);
+		
+		if(gearCatcher.getTriggerState()){
+			deliverGear();
 		}
 		
 		if(controller.getButtonX()){
-			ballShelf.release();
+			autoTurn(-60);
 		}
 		if(controller.getButtonY()){
-			ballShelf.upTest();
+			autoTurn(60);
+		}
+
+		//Ball elevator
+		if(controller.getLeftTrigger() > 0){
+			ballElevator.set(0.75f, -1f); //-0.3f?
+		} else{
+			ballElevator.set(0f, 0f);
 		}
 
 		//Shooting
-		if(controller.getLeftTrigger() > 0){
-			shooter.set(0.7f, 1f); //0.7f?
+		if(controller.getRightTrigger() > 0){
+			shooter.set(-0.82f, 0f);
+			if(controller.getButtonRB()){
+				shooter.set(-0.82f, -1f);
+				ballElevator.set(0f, 1f);
+			}
 		} else{
 			shooter.set(0f, 0f);
 		}
@@ -246,16 +256,21 @@ public class Robot extends IterativeRobot {
 		} else{
 			shiftLow();
 		}
-
-		/*
+		
 		double x = controller.getRightJoyX();
-		x = 0.55 * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
+		x = 0.7f * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
 		double y = controller.getRightJoyY();
-		y = 0.6 * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
+		y = 0.7f * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
 		drive.tankDrive(y - x, y + x);
-		*/
 
 		Timer.delay(PERIODIC_DELAY);
+	}
+	
+	private void deliverGear(){
+		gearCatcher.open();
+		autoMove(-0.7f, 1f);
+		gearCatcher.close();
+		autoTurn(180);
 	}
 
 	private void shiftHigh(){
