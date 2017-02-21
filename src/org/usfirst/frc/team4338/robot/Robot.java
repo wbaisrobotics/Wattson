@@ -117,7 +117,7 @@ public class Robot extends IterativeRobot {
 			case customAuto: //Custom autonomous program
 				break;
 			case defaultAuto: //Default autonomous program
-				gearTest();
+				//gearTest();
 				break;
 			default:
 				break;
@@ -210,6 +210,13 @@ public class Robot extends IterativeRobot {
 		} else{
 			ballElevator.set(0f, 0f);
 		}
+		
+		if(controller.getButtonX()){
+			ballShelf.release();
+		}
+		if(controller.getButtonY()){
+			ballShelf.upTest();
+		}
 
 		//Shooting
 		if(controller.getLeftTrigger() > 0){
@@ -240,11 +247,13 @@ public class Robot extends IterativeRobot {
 			shiftLow();
 		}
 
+		/*
 		double x = controller.getRightJoyX();
 		x = 0.55 * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
 		double y = controller.getRightJoyY();
 		y = 0.6 * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
 		drive.tankDrive(y - x, y + x);
+		*/
 
 		Timer.delay(PERIODIC_DELAY);
 	}

@@ -10,6 +10,11 @@ public class BallShelf{
         leftPin = new Servo(5);
         rightPin = new Servo(6);
     }
+    
+    public void upTest(){
+    	leftPin.setAngle(20);
+    	rightPin.setAngle(20);
+    }
 
     public void release(){
         leftPin.setAngle(0); //ASSIGN VALUES!
