@@ -7,12 +7,12 @@ public class BallShelf{
     private Servo rightPin;
 
     public BallShelf(){
-        leftPin = new Servo(); //ASSIGN VALUES!
-        rightPin = new Servo();
+        leftPin = new Servo(5);
+        rightPin = new Servo(6);
     }
 
     public void release(){
-        leftPin.setAngle(); //ASSIGN VALUES!
-        rightPin.setAngle();
+        leftPin.setAngle(0); //ASSIGN VALUES!
+        rightPin.setAngle(0);
     }
 }
