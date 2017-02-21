@@ -92,86 +92,19 @@ public class Vision{
 		}
 	}
 
-	/*
-	public void processBoiler(){
-		Mat frame = new Mat();
-		Mat hsv = new Mat();
-
-		//Range to filter
-		Scalar lower = new Scalar(110, 50, 50);
-		Scalar upper = new Scalar(130, 255, 255);
-
-		//Kernel size to blur with
-		Size blurAmount = new Size(5, 5);
-
-		Mat hierarchy = new Mat();
-		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		Scalar contourColor = new Scalar(110, 255, 255);
-
-		BoilerTarget target;
-
-		double adjustValue;
-
-		while(true){
-			// Grab a frame. If it has a frame time of 0, there was an error.
-			// Just skip and continue
-			long frameTime = cvSink.grabFrame(frame);
-			if(frameTime == 0) continue;
-
-			//Convert to HSV for easier filtering
-			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
-			//Filter image by color
-			Core.inRange(hsv, lower, upper, hsv);
-
-			//Clear contours list
-			contours.clear();
-			//Blur frame to omit extra noise
-			Imgproc.blur(hsv, hsv, blurAmount);
-			//Find contours
-			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-
-			//Find target
-			if(contours.size() > 0){
-				//Merge sort the contours
-				sortContours(contours, 0, contours.size() - 1);
-				//Find the matching target
-				target = findBoilerTarget(contours);
-
-				//Draw findings
-				Imgproc.drawContours(hsv, contours, -1, contourColor);
-				if(target.doesExist()){ //Draw target if it exists
-					for(int i = 0; i < 4; i++){
-						//Fix this line, targetVerts out of scope!
-						Imgproc.line(hsv, targetVerts[i], targetVerts[(i + 1) % 4], target.getColor());
-					}
+	private void sortContours(ArrayList<MatOfPoint> contours){
+		for(int i = 1; i < contours.size(); i++){
+			int j = i;
+			while(j > 0){
+				if(Imgproc.contourArea(contours.get(j)) > Imgproc.contourArea(contours.get(j-1))){
+					MatOfPoint temp = contours.get(j-1);
+					contours.set(j-1, contours.get(j));
+					contours.set(j, temp);
 				}
-
-				//Update network table with the target data
-				sd.putBoolean("targetExists", target.doesExist());
-				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
+				j--;
 			}
-
-			//Put modified cv image on cv source to be streamed
-			cvSource.putFrame(hsv);
 		}
 	}
-
-	//NOT DONE
-	private BoilerTarget findBoilerTarget(ArrayList<MatOfPoint> contours){
-		BoilerTarget target;
-		Point[] targetVerts = new Point[4];
-		double targetRatio = 3.75f; //15in / 4in
-		double fudge = 0.1f; //Maybe ~10% uncertainty
-
-		for(MatOfPoint contour : contours){
-			//target = Imgproc.minAreaRect(contour);
-			//target.points(targetVerts);
-			//target.getAspectRatio();
-		}
-
-		return target;
-	}
-	*/
 
 	public void processGear(){
 		// All Mats and Lists should be stored outside the loop to avoid allocations
@@ -260,19 +193,86 @@ public class Vision{
 		return target;
 	}
 
-	private void sortContours(ArrayList<MatOfPoint> contours){
-		for(int i = 1; i < contours.size(); i++){
-			int j = i;
-			while(j > 0){
-				if(Imgproc.contourArea(contours.get(j)) > Imgproc.contourArea(contours.get(j-1))){
-					MatOfPoint temp = contours.get(j-1);
-					contours.set(j-1, contours.get(j));
-					contours.set(j, temp);
+	/*
+	public void processBoiler(){
+		Mat frame = new Mat();
+		Mat hsv = new Mat();
+
+		//Range to filter
+		Scalar lower = new Scalar(110, 50, 50);
+		Scalar upper = new Scalar(130, 255, 255);
+
+		//Kernel size to blur with
+		Size blurAmount = new Size(5, 5);
+
+		Mat hierarchy = new Mat();
+		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+		Scalar contourColor = new Scalar(110, 255, 255);
+
+		BoilerTarget target;
+
+		double adjustValue;
+
+		while(true){
+			// Grab a frame. If it has a frame time of 0, there was an error.
+			// Just skip and continue
+			long frameTime = cvSink.grabFrame(frame);
+			if(frameTime == 0) continue;
+
+			//Convert to HSV for easier filtering
+			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
+			//Filter image by color
+			Core.inRange(hsv, lower, upper, hsv);
+
+			//Clear contours list
+			contours.clear();
+			//Blur frame to omit extra noise
+			Imgproc.blur(hsv, hsv, blurAmount);
+			//Find contours
+			Imgproc.findContours(hsv, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+			//Find target
+			if(contours.size() > 0){
+				//Merge sort the contours
+				sortContours(contours, 0, contours.size() - 1);
+				//Find the matching target
+				target = findBoilerTarget(contours);
+
+				//Draw findings
+				Imgproc.drawContours(hsv, contours, -1, contourColor);
+				if(target.doesExist()){ //Draw target if it exists
+					for(int i = 0; i < 4; i++){
+						//Fix this line, targetVerts out of scope!
+						Imgproc.line(hsv, targetVerts[i], targetVerts[(i + 1) % 4], target.getColor());
+					}
 				}
-				j--;
+
+				//Update network table with the target data
+				sd.putBoolean("targetExists", target.doesExist());
+				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
 			}
+
+			//Put modified cv image on cv source to be streamed
+			cvSource.putFrame(hsv);
 		}
 	}
+
+	//NOT DONE
+	private BoilerTarget findBoilerTarget(ArrayList<MatOfPoint> contours){
+		BoilerTarget target;
+		Point[] targetVerts = new Point[4];
+		double targetRatio = 3.75f; //15in / 4in
+		double fudge = 0.1f; //Maybe ~10% uncertainty
+
+		for(MatOfPoint contour : contours){
+			//target = Imgproc.minAreaRect(contour);
+			//target.points(targetVerts);
+			//target.getAspectRatio();
+		}
+
+		return target;
+	}
+	*/
 
 	public static void main(String[] args){
 		Vision vision = new Vision();
