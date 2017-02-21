@@ -145,21 +145,45 @@ public class Robot extends IterativeRobot {
 		
 		while(Timer.getFPGATimestamp() - start < time){
 			angle = gyro.getAngle();
+			//y - x, y + x
 			drive.tankDrive(speed - angle * kp, speed + angle * kp);
 			Timer.delay(PERIODIC_DELAY);
 		}
 		drive.tankDrive(0f, 0f);
 	}
 	
-	private void autoTurn(double turnAngle){ //NOT DONE!
+	private void autoTurn(double turnAngle){
 		gyro.reset();
+		angle = gyro.getAngle();
 		
-		while(angle < turnAngle){ //incorrect
+		if(Math.signum(turnAngle) > 0){ //Turn right
+			while(angle < turnAngle){
+				angle = gyro.getAngle();
+				drive.tankDrive(0.2f, -0.2f);
+				Timer.delay(PERIODIC_DELAY);
+			}
+		} else if(Math.signum(turnAngle) < 0){ //Turn left
+			while(angle > turnAngle){
+				angle = gyro.getAngle();
+				drive.tankDrive(-0.2f, 0.2f);
+				Timer.delay(PERIODIC_DELAY);
+			}
+		}
+		
+		/*
+		while(turnAngle - angle < 0){ //incorrect
 			angle = gyro.getAngle();
-			drive.tankDrive(angle * kp, angle * kp);
+			drive.tankDrive(0.2f * Math.signum(turnAngle), 0.2f * -Math.signum(turnAngle));
 			Timer.delay(PERIODIC_DELAY);
 		}
+		*/
 		drive.tankDrive(0f, 0f);
+	}
+	
+	private void autoEnd(){
+		while(isAutonomous()){
+			drive.tankDrive(0f, 0f);
+		}
 	}
 
 	@Override
