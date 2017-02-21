@@ -68,40 +68,63 @@ public class Vision{
 		ballCamera.setBrightness(0);
 		ballCamera.setExposureManual(0);
 
-		//Initialize cv sink and source to use the ball camera
+		//Initialize cv sink and source to use the gear camera
 		cvSink = new CvSink("CV Image Grabber");
-		cvSink.setSource(ballCamera);
+		cvSink.setSource(gearCamera);
 		cvSource = new CvSource("CV Image Source", VideoMode.PixelFormat.kMJPEG, width, height, fps);
 
-		//Initialize streams to use ball camera
+		//Initialize streams to use gear camera
 		rawStream = new MjpegServer("Raw Server", rawStreamPort);
-		rawStream.setSource(ballCamera);
+		rawStream.setSource(gearCamera);
 		cvStream = new MjpegServer("CV Server", cvStreamPort);
 		cvStream.setSource(cvSource);
 	}
 
-	private void updateCamera(){
-		String camera;
-		try{
-			camera = sd.getString("camera", "ballCamera");
-		} catch(TableKeyNotDefinedException e){
-			System.out.println("Error: key \"camera\" not found");
-			e.printStackTrace();
-		}
-
+	private void selectCamera(String camera){
 		switch(camera){
 			case "ballCamera":
-				rawStream.setSource(ballCamera);
-				cvSink.setSource(ballCamera);
+				if(rawStream.getSource() != ballCamera){ //Change the source only if needed
+					rawStream.setSource(ballCamera);
+					cvSink.setSource(ballCamera);
+				}
 				break;
 			case "gearCamera":
-				rawStream.setSource(gearCamera);
-				cvSink.setSource(gearCamera);
+				if(rawStream.getSource() != gearCamera){
+					rawStream.setSource(gearCamera);
+					cvSink.setSource(gearCamera);
+				}
 				break;
 			default:
 				System.out.println("Falling back to default camera!");
-				rawStream.setSource(ballCamera);
-				cvSink.setSource(ballCamera);
+				if(rawStream.getSource() != gearCamera){
+					rawStream.setSource(gearCamera);
+					cvSink.setSource(gearCamera);
+				}
+				break;
+		}
+	}
+
+	public void process(){
+		String state;
+		try{
+			state = sd.getString("state", "processGear"); //Default to processGear
+		} catch(TableKeyNotDefinedException e){
+			System.out.println("Error: key \"state\" not found");
+			e.printStackTrace();
+		}
+
+		switch(state){
+			case "processGear":
+				selectCamera("gearCamera");
+				processGear();
+				break;
+			/*
+			case "processBoiler":
+				selectCamera("ballCamera");
+				processBoiler();
+				break;
+			*/
+			default:
 				break;
 		}
 	}
