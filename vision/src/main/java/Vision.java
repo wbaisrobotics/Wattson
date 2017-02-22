@@ -177,7 +177,14 @@ public class Vision{
 
 				if(target != null){ //Draw target if it exists and update adjust value
 					Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
-					adjustValue = (target.x + target.width / 2) - width / 2;
+					//adjustValue = (target.x + target.width / 2) - width / 2;
+					//adjustValue = -1f + (target.x + width / 2f) * 2f / width;
+					
+					double r = 290f / target.height;
+					int offset = (target.x + target.width / 2) - width / 2;
+					double offsetFeet = offset * 5f / 12f / target.height;
+					adjustValue = Math.toDegrees(offsetFeet / r);
+					System.out.println(adjustValue);
 				} else{
 					System.out.println("Error: could not find gear target");
 					adjustValue = -1000; //This means does not exist
@@ -197,14 +204,14 @@ public class Vision{
 	private Rect findGearTarget(ArrayList<MatOfPoint> contours){
 		double targetAspectRatio = 2f / 5f;
 		double foundAspectRatio;
-		double fudge = 0.1f;
+		double fudge = 0.2f;
 		Rect target = null;
 		Rect left = null;
 		Rect right = null;
 
 		for(MatOfPoint contour : contours){
 			Rect temp = Imgproc.boundingRect(contour);
-			foundAspectRatio = temp.width / temp.height;
+			foundAspectRatio = (double) temp.width / (double) temp.height;
 			if(foundAspectRatio < targetAspectRatio * (1f + fudge) && foundAspectRatio > targetAspectRatio * (1f - fudge)){
 				if(left == null){
 					left = temp;
