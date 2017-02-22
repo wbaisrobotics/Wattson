@@ -5,6 +5,7 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -21,14 +22,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	final String defaultAuto = "Default";
-	final String customAuto = "My Auto";
+	final String centerGear = "Center Gear";
+	final String leftGear = "Left Gear";
+	final String rightGear = "Right Gear";
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
 
 	public final double PERIODIC_DELAY = 0.005f;
 
-	private Controller controller;
+	private Controller pilot;
+	private Controller copilot;
+	
 	private Compressor compressor;
 	
 	//Gyro
@@ -52,6 +56,15 @@ public class Robot extends IterativeRobot {
 	private Victor climber;
 	
 	private AnalogInput gearSonic;
+	
+	private DigitalOutput gearRelay;
+	private DigitalOutput ballRelay;
+	
+	private boolean state = false;
+	private double lastDebounceTime = 0f;
+	private double debounceDelay = 0.05f;
+	private boolean toggleState = false;
+	private boolean lastToggleState = false;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -59,11 +72,14 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		chooser.addDefault("Default Auto", defaultAuto);
-		chooser.addObject("My Auto", customAuto);
+		chooser.addDefault("Center Gear", centerGear);
+		chooser.addObject("Left Gear", leftGear);
+		chooser.addObject("Right Gear", rightGear);
 		SmartDashboard.putData("Auto choices", chooser);
 
-		controller = new Controller(0);
+		pilot = new Controller(0);
+		copilot = new Controller(1);
+		
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
 		
@@ -85,6 +101,11 @@ public class Robot extends IterativeRobot {
 		climber = new Victor(0);
 		
 		gearSonic = new AnalogInput(2); //Which channel to use?
+		
+		gearRelay = new DigitalOutput(1);
+		ballRelay = new DigitalOutput(2);
+		gearRelay.set(true);
+		ballRelay.set(false);
 	}
 
 	/**
@@ -115,29 +136,98 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		switch (autoSelected) {
-			case customAuto: //Custom autonomous program
+			case centerGear:
+				autoCenterGear();
 				break;
-			case defaultAuto: //Default autonomous program
-				//gearTest();
+			case leftGear:
+				autoLeftGear();
+				break;
+			case rightGear:
+				autoRightGear();
 				break;
 			default:
 				break;
 		}
 	}
-
-	public void gearTest(){ //Not done
-		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-		if(adjustValue != -1000){ //If the target exists
-			drive.tankDrive(0.2f * adjustValue, 0.2f * -adjustValue);
+	
+	private void autoCenterGear(){ //ADD Ultrasonic or at least time safety fallback (probably just time)
+		//THIS WILL REPLACE THE autoMove(0.6f, 2f); CALL
+		/*
+		double start = Timer.getFPGATimestamp();
+		gyro.reset();
+		while(gearSonic.getVoltage() > whatDistance? && Timer.getFPGATimestamp() - start < estimatedTimeToComplete?){
+			angle = gyro.getAngle();
+			drive.tankDrive(0.6f + angle * kp, 0.6f - angle * kp);
+			Timer.delay(PERIODIC_DELAY);
 		}
-
-		if(gearCatcher.getTriggerState()){
-			double start = Timer.getFPGATimestamp();
-			while(Timer.getFPGATimestamp() - start < 1){
-				drive.tankDrive(-0.2f, -0.2f);
-				Timer.delay(PERIODIC_DELAY);
+		*/
+		autoMove(0.6f, 2f);
+		
+		boolean triggered = false;
+		gyro.reset();
+		while(!triggered){
+			angle = gyro.getAngle();
+			drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
+			if(gearCatcher.getTriggerState()){
+				triggered = true;
+				deliverGear();
 			}
+			
+			Timer.delay(PERIODIC_DELAY);
 		}
+		autoEnd();
+	}
+
+	private void autoLeftGear(){
+		autoMove(0.7f, 3.15f);
+		autoTurn(30);
+		Timer.delay(0.5f);
+		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
+			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		}
+		autoTurn(adjustValue);
+		boolean triggered = false;
+		gyro.reset();
+		while(!triggered){
+			angle = gyro.getAngle();
+			drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
+			if(gearCatcher.getTriggerState()){
+				triggered = true;
+				deliverGear();
+			}
+			
+			Timer.delay(PERIODIC_DELAY);
+		}
+		autoTurn(-30);
+		autoMove(0.7f, 3f);
+		autoEnd();
+	}
+	
+	private void autoRightGear(){
+		autoMove(0.7f, 3.15f);
+		autoTurn(-30);
+		Timer.delay(0.5f);
+		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
+			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		}
+		autoTurn(adjustValue);
+		boolean triggered = false;
+		gyro.reset();
+		while(!triggered){
+			angle = gyro.getAngle();
+			drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
+			if(gearCatcher.getTriggerState()){
+				triggered = true;
+				deliverGear();
+			}
+			
+			Timer.delay(PERIODIC_DELAY);
+		}
+		autoTurn(30);
+		autoMove(0.7f, 3f);
+		autoEnd();
 	}
 	
 	private void autoMove(double speed, double time){
@@ -186,6 +276,12 @@ public class Robot extends IterativeRobot {
 			drive.tankDrive(0f, 0f);
 		}
 	}
+	
+	private void deliverGear(){
+		gearCatcher.open();
+		autoMove(-0.7f, 2f);
+		gearCatcher.close();
+	}
 
 	@Override
 	public void teleopInit(){
@@ -198,79 +294,127 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		/*
-		if(SmartDashboard.getBoolean("targetExists", false)){
-			//do target aiming here
-		} else{
-			//Regular teleop code
-		}
-		*/
+		SmartDashboard.putNumber("gearSonic", gearSonic.getVoltage());
 		
 		if(gearCatcher.getTriggerState()){
 			deliverGear();
 		}
 		
-		if(controller.getButtonX()){
-			autoTurn(-60);
-		}
-		if(controller.getButtonY()){
-			autoTurn(60);
-		}
-
-		//Ball elevator
-		if(controller.getLeftTrigger() > 0){
-			ballElevator.set(0.75f, -1f); //-0.3f?
+		//Update the state
+		state = SmartDashboard.getBoolean("state", false);
+		if(state){
+			gearRelay.set(false);
+			ballRelay.set(true);
 		} else{
-			ballElevator.set(0f, 0f);
+			gearRelay.set(true);
+			ballRelay.set(false);
 		}
-
-		//Shooting
-		if(controller.getRightTrigger() > 0){
-			shooter.set(-0.82f, 0f);
-			if(controller.getButtonRB()){
-				shooter.set(-0.82f, -1f);
-				ballElevator.set(0f, 1f);
+		
+		//--------------- PILOT CONTROLS ---------------
+		//IS SOME OF THIS REDUNDENT?
+		//State switching
+		boolean toggleReading = pilot.getButtonA();
+		if(toggleReading != lastToggleState){
+			lastDebounceTime = Timer.getFPGATimestamp();
+		}
+		if(Timer.getFPGATimestamp() - lastDebounceTime > debounceDelay){
+			if(toggleState != toggleReading){
+				toggleState = toggleReading;
+				if(toggleState){
+					state = !state;
+					SmartDashboard.putBoolean("state", state);
+				}
 			}
-		} else{
-			shooter.set(0f, 0f);
 		}
-
-		//Gear catcher
-		if(controller.getButtonA()){
-			gearCatcher.open();
-		}
-		if(controller.getButtonB()){
-			gearCatcher.close();
-		}
-
-		//Climber
-		if(controller.getPOV() == Controller.POVUP){
-			climber.set(1f);
-		} else if(controller.getPOV() == Controller.POVDOWN){
-			climber.set(-1f);
-		}
-
-		//Driving
-		if(controller.getButtonRS()){
+		lastToggleState = toggleReading;
+		
+		//Gear Shifting
+		if(pilot.getLeftTrigger() > 0){
 			shiftHigh();
 		} else{
 			shiftLow();
 		}
 		
-		double x = controller.getRightJoyX();
-		x = 0.7f * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
-		double y = controller.getRightJoyY();
-		y = 0.7f * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
-		drive.tankDrive(y - x, y + x);
+		//Driving
+		if(pilot.getRightTrigger() > 0){ //Shake --- TODO FINISH THIS!
+			double turn = Math.sin(20f * Timer.getFPGATimestamp());
+			drive.tankDrive(0.7f * turn, 0.7f * -turn);
+		} else{ //Allow for normal driving
+			double x = pilot.getRightJoyX();
+			x = 0.7f * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
+			double y = pilot.getRightJoyY();
+			y = ((state) ? 0.7f : -0.7f) * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
+			drive.tankDrive(y - x, y + x);
+		}
+		
+		//--------------- COPILOT CONTROLS ---------------
+		//Ball elevator
+		if(copilot.getRightTrigger() > 0){
+			ballElevator.set(0.75f, -1f);
+		} else{
+			ballElevator.set(0f, 0f);
+		}
+		
+		//Shooting
+		if(copilot.getLeftTrigger() > 0){
+			shooter.set(-0.75f, 0f);
+			if(copilot.getButtonLB()){ //CHANGE THIS TO AUTO START WITH DELAY
+				shooter.set(-0.75f, -0.55f);
+				ballElevator.set(0f, 1f);
+			}
+		} else if(copilot.getButtonRB()){ //Ball unjamming
+			shooter.set(0.5f, 1f);
+		} else{
+			shooter.set(0f, 0f);
+		}
+		
+		//Shooting
+		/*
+		if(copilot.getLeftTrigger() > 0){
+			if(shooter.getWheelSpeed() == 0){
+				shooter.set(-0.82f, 0f);
+				shooter.resetStart();
+			} else if(shooter.canFeed()){
+				shooter.set(-0.82f, -0.75f);
+				ballElevator.set(0f, 1f);
+			}
+		} else{
+			shooter.setFeeder(0f);
+		}
+		if(copilot.getButtonB()){
+			shooter.set(0f, 0f);
+		}
+		if(copilot.getButtonRB()){
+			shooter.set(0.7f, 1f);
+		} else{
+			if(shooter.getWheelSpeed() < 0){ //FIX THIS
+				shooter.setFeeder(0f);
+			} else{
+				shooter.set(0f, 0f);
+			}
+		}
+		*/
+		
+		//Climber
+		if(copilot.getPOV() == Controller.POVUP){
+			climber.set(1f);
+		} else if(copilot.getPOV() == Controller.POVDOWN){
+			climber.set(-1f);
+		} else{
+			climber.set(0f);
+		}
+		
+		//Retry shelf extension
+		if(copilot.getButtonLS()){
+			ballShelf.retry();
+		}
+		
+		//Close gear catcher (if needed)
+		if(copilot.getButtonX()){
+			gearCatcher.close();
+		}
 
 		Timer.delay(PERIODIC_DELAY);
-	}
-	
-	private void deliverGear(){
-		gearCatcher.open();
-		autoMove(-0.7f, 1f);
-		gearCatcher.close();
-		autoTurn(180);
 	}
 
 	private void shiftHigh(){

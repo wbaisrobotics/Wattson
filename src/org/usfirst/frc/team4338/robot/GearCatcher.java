@@ -13,11 +13,11 @@ public class GearCatcher{
     }
 
     public void open(){
-        pistons.set(DoubleSolenoid.Value.kForward);
+        pistons.set(DoubleSolenoid.Value.kReverse);
     }
 
     public void close(){
-        pistons.set(DoubleSolenoid.Value.kReverse);
+        pistons.set(DoubleSolenoid.Value.kForward);
     }
 
     public boolean getTriggerState(){

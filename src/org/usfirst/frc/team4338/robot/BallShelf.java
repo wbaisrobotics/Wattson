@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4338.robot;
 
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 
 public class BallShelf{
     private Servo leftPin;
@@ -12,7 +13,14 @@ public class BallShelf{
     }
     
     public void release(){
-        leftPin.set(0.4);
-        rightPin.set(0.6);
+        leftPin.set(0.4f);
+        rightPin.set(0.6f);
+    }
+    
+    public void retry(){
+    	leftPin.set(0.5f);
+    	rightPin.set(0.5f);
+    	Timer.delay(1f);
+    	release();
     }
 }
