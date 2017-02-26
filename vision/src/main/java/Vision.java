@@ -255,7 +255,11 @@ public class Vision{
 			// Grab a frame. If it has a frame time of 0, there was an error.
 			// Just skip and continue
 			long frameTime = cvSink.grabFrame(frame);
+<<<<<<< HEAD
 			if(frameTime == 0) continue;
+=======
+			if (frameTime == 0) continue;
+>>>>>>> BDriveTest
 
 			//Convert to HSV for easier filtering
 			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
@@ -278,6 +282,7 @@ public class Vision{
 
 				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
+<<<<<<< HEAD
 				if(target.doesExist()){ //Draw target if it exists
 					for(int i = 0; i < 4; i++){
 						//Fix this line, targetVerts out of scope!
@@ -288,6 +293,13 @@ public class Vision{
 				//Update network table with the target data
 				sd.putBoolean("targetExists", target.doesExist());
 				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
+=======
+				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+
+				adjustValue = (target.x + target.width / 2) - width / 2;
+				//Update network table
+				sd.putNumber("adjustValue", adjustValue);
+>>>>>>> BDriveTest
 			}
 
 			//Put modified cv image on cv source to be streamed
@@ -308,7 +320,28 @@ public class Vision{
 			//target.getAspectRatio();
 		}
 
+<<<<<<< HEAD
 		return target;
+=======
+		for(int i = first; i <= last; i++){
+			list.set(i, mergedList.get(i));
+		}
+	}
+
+	private Rect findLargestContour(ArrayList<MatOfPoint> contours){
+		double largestArea = Imgproc.contourArea(contours.get(0));
+		int largestIndex = 0;
+
+		for(int i = 1; i < contours.size(); i++){
+			double nextArea = Imgproc.contourArea(contours.get(i));
+			if(nextArea > largestArea){
+				largestArea = nextArea;
+				largestIndex = i;
+			}
+		}
+
+		return Imgproc.boundingRect(contours.get(largestIndex));
+>>>>>>> BDriveTest
 	}
 	*/
 
