@@ -93,7 +93,7 @@ public class Robot extends IterativeRobot {
 		ballElevator = new BallElevator();
 		shooter = new Shooter();
 		gearCatcher = new GearCatcher();
-		climber = new Victor(0);
+		climber = new Victor(8);
 		
 		gearSonic = new AnalogInput(2); //Which channel to use?
 		
