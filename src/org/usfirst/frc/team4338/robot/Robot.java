@@ -50,7 +50,6 @@ public class Robot extends IterativeRobot {
 	private RobotDrive drive;
 
 	private BallElevator ballElevator;
-	private BallShelf ballShelf;
 	private Shooter shooter;
 	private GearCatcher gearCatcher;
 	private Victor climber;
@@ -95,7 +94,6 @@ public class Robot extends IterativeRobot {
 		drive.setExpiration(0.1f);
 		
 		ballElevator = new BallElevator();
-		ballShelf = new BallShelf();
 		shooter = new Shooter();
 		gearCatcher = new GearCatcher();
 		climber = new Victor(0);
@@ -126,7 +124,6 @@ public class Robot extends IterativeRobot {
 		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
 
-		ballShelf.release();
 		gyro.reset();
 	}
 
@@ -285,7 +282,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit(){
-		ballShelf.release();
 		gyro.reset();
 	}
 
@@ -336,7 +332,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 		//Driving
-		if(pilot.getRightTrigger() > 0){ //Shake --- TODO FINISH THIS!
+		if(pilot.getRightTrigger() > 0){ //Shake
 			double turn = Math.sin(20f * Timer.getFPGATimestamp());
 			drive.tankDrive(0.7f * turn, 0.7f * -turn);
 		} else{ //Allow for normal driving
@@ -402,11 +398,6 @@ public class Robot extends IterativeRobot {
 			climber.set(-1f);
 		} else{
 			climber.set(0f);
-		}
-		
-		//Retry shelf extension
-		if(copilot.getButtonLS()){
-			ballShelf.retry();
 		}
 		
 		//Close gear catcher (if needed)
