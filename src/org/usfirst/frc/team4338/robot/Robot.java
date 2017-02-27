@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -41,12 +42,12 @@ public class Robot extends IterativeRobot {
 	private double kp = 0.03f;
 
 	//Drive
-	private DoubleSolenoid leftShifter;
-	private DoubleSolenoid rightShifter;
-	private CANTalon leftCAN1;
-	private CANTalon leftCAN2;
-	private CANTalon rightCAN1;
-	private CANTalon rightCAN2;
+	private Servo leftShifter;
+	private Servo rightShifter;
+	private int leftShifterLowAngle = 50;
+	private int leftShifterHighAngle = 125;
+	private int rightShifterLowAngle = 5;
+	private int rightShifterHighAngle = 95;
 	private RobotDrive drive;
 
 	private BallElevator ballElevator;
@@ -84,13 +85,9 @@ public class Robot extends IterativeRobot {
 		
 		gyro = new ADXRS450_Gyro();
 
-		leftShifter = new DoubleSolenoid(1, 6);
-		rightShifter = new DoubleSolenoid(2, 5);
-		leftCAN1 = new CANTalon(1);
-		leftCAN2 = new CANTalon(2);
-		rightCAN1 = new CANTalon(3);
-		rightCAN2 = new CANTalon(4);
-		drive = new RobotDrive(leftCAN1, leftCAN2, rightCAN1, rightCAN2);
+		leftShifter = new Servo(2);
+		rightShifter = new Servo(3);
+		drive = new RobotDrive(0, 1);
 		drive.setExpiration(0.1f);
 
 		ballElevator = new BallElevator();
@@ -441,13 +438,13 @@ public class Robot extends IterativeRobot {
 	}
 
 	private void shiftHigh(){
-		leftShifter.set(DoubleSolenoid.Value.kForward);
-		rightShifter.set(DoubleSolenoid.Value.kForward);
+		leftShifter.setAngle(leftShifterHighAngle);
+		rightShifter.setAngle(rightShifterHighAngle);
 	}
 
 	private void shiftLow(){
-		leftShifter.set(DoubleSolenoid.Value.kReverse);
-		rightShifter.set(DoubleSolenoid.Value.kReverse);
+		leftShifter.setAngle(leftShifterLowAngle);
+		rightShifter.setAngle(rightShifterLowAngle);
 	}
 
 	/**
