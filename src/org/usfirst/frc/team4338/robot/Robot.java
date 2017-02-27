@@ -440,6 +440,11 @@ public class Robot extends IterativeRobot {
 		if(copilot.getButtonX()){
 			gearCatcher.close();
 		}
+		/* Uncomment this if we find we need the option
+		if(copilot.getButtonY()){
+			gearCatcher.open();
+		}
+		*/
 
 		Timer.delay(PERIODIC_DELAY);
 	}
