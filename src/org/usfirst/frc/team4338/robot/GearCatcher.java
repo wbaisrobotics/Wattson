@@ -9,7 +9,7 @@ public class GearCatcher{
 
     public GearCatcher(){
         trigger = new DigitalInput(0);
-        pistons = new DoubleSolenoid(0, 7);
+        pistons = new DoubleSolenoid(0, 1);
     }
 
     public void open(){
