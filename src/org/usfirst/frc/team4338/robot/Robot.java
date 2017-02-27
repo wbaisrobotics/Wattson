@@ -93,7 +93,7 @@ public class Robot extends IterativeRobot {
 		rightCAN2 = new CANTalon(4);
 		drive = new RobotDrive(leftCAN1, leftCAN2, rightCAN1, rightCAN2);
 		drive.setExpiration(0.1f);
-		
+
 		ballElevator = new BallElevator();
 		ballShelf = new BallShelf();
 		shooter = new Shooter();
@@ -328,6 +328,32 @@ public class Robot extends IterativeRobot {
 		}
 		lastToggleState = toggleReading;
 		
+		//Driving
+		double x = pilot.getRightJoyX();
+		x = Math.signum(x) * Math.pow(x, 2);
+		double y = pilot.getRightJoyY();
+		y = Math.signum(y) * Math.pow(y, 2);
+		
+		if(pilot.getLeftTrigger() > 0){ //High gear driving
+			shiftHigh();
+			x *= 0.5f; //decreased from 0.7f, was too fast turning in high gear, Maybe make this lower
+			y *= state ? 1f : -1f;
+		} else{ //Low gear driving
+			shiftLow();
+			
+			if(pilot.getRightTrigger() > 0){ //Shake
+				double turn = Math.sin(20f * Timer.getFPGATimestamp());
+				//drive.tankDrive(0.7f * turn, 0.7f * -turn);
+				x = 0.7f * turn; //Use x so the wheels turn opposite
+				y = 0;
+			} else{
+				x *= 0.7f;
+				y *= state ? 0.8f : -0.8f;
+			}
+		}
+		drive.tankDrive(y - x, y + x);
+		
+		/*
 		//Gear Shifting
 		if(pilot.getLeftTrigger() > 0){
 			shiftHigh();
@@ -343,9 +369,10 @@ public class Robot extends IterativeRobot {
 			double x = pilot.getRightJoyX();
 			x = 0.7f * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
 			double y = pilot.getRightJoyY();
-			y = ((state) ? 0.7f : -0.7f) * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
+			y = ((state) ? 0.9f : -0.9f) * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
 			drive.tankDrive(y - x, y + x);
 		}
+		*/
 		
 		//--------------- COPILOT CONTROLS ---------------
 		//Ball elevator
@@ -363,7 +390,7 @@ public class Robot extends IterativeRobot {
 				ballElevator.set(0f, 1f);
 			}
 		} else if(copilot.getButtonRB()){ //Ball unjamming
-			shooter.set(0.5f, 1f);
+			shooter.set(1f, 1f);
 		} else{
 			shooter.set(0f, 0f);
 		}
