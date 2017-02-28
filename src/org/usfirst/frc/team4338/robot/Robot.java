@@ -314,7 +314,7 @@ public class Robot extends IterativeRobot {
 		//--------------- PILOT CONTROLS ---------------
 		//IS SOME OF THIS REDUNDENT?
 		//State switching
-		boolean toggleReading = pilot.getButtonA();
+		boolean toggleReading = pilot.getButtonX();
 		if(toggleReading != lastToggleState){
 			lastDebounceTime = Timer.getFPGATimestamp();
 		}
