@@ -4,8 +4,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class GearCatcher{
-    DigitalInput trigger;
-    DoubleSolenoid pistons;
+    private DigitalInput trigger;
+    private DoubleSolenoid pistons;
+    
+    private boolean enabled = false;
 
     public GearCatcher(){
         trigger = new DigitalInput(0);
@@ -22,5 +24,17 @@ public class GearCatcher{
 
     public boolean getTriggerState(){
         return trigger.get();
+    }
+    
+    public boolean isEnabled(){
+    	return enabled;
+    }
+    
+    public void enable(){
+    	enabled = true;
+    }
+    
+    public void disable(){
+    	enabled = false;
     }
 }

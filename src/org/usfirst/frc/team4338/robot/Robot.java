@@ -296,8 +296,9 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		SmartDashboard.putNumber("gearSonic", gearSonic.getVoltage());
 		
-		if(gearCatcher.getTriggerState()){
+		if(gearCatcher.isEnabled() && gearCatcher.getTriggerState()){
 			deliverGear();
+			gearCatcher.disable();
 		}
 		
 		//Update the state
@@ -328,6 +329,11 @@ public class Robot extends IterativeRobot {
 		}
 		lastToggleState = toggleReading;
 		
+		//Enable gear catcher
+		if(pilot.getButtonA()){
+			gearCatcher.enable();
+		}
+		
 		//Driving
 		double x = pilot.getRightJoyX();
 		x = Math.signum(x) * Math.pow(x, 2);
@@ -352,27 +358,6 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		drive.tankDrive(y - x, y + x);
-		
-		/*
-		//Gear Shifting
-		if(pilot.getLeftTrigger() > 0){
-			shiftHigh();
-		} else{
-			shiftLow();
-		}
-		
-		//Driving
-		if(pilot.getRightTrigger() > 0){ //Shake --- TODO FINISH THIS!
-			double turn = Math.sin(20f * Timer.getFPGATimestamp());
-			drive.tankDrive(0.7f * turn, 0.7f * -turn);
-		} else{ //Allow for normal driving
-			double x = pilot.getRightJoyX();
-			x = 0.7f * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
-			double y = pilot.getRightJoyY();
-			y = ((state) ? 0.9f : -0.9f) * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
-			drive.tankDrive(y - x, y + x);
-		}
-		*/
 		
 		//--------------- COPILOT CONTROLS ---------------
 		//Ball elevator
