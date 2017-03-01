@@ -22,11 +22,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	final String centerGear = "Center Gear";
-	final String leftGear = "Left Gear";
-	final String rightGear = "Right Gear";
-	String autoSelected;
-	SendableChooser<String> chooser = new SendableChooser<>();
+	//Red autonomous choices
+	private final String redA1 = "Red A1";
+	private final String redB1 = "Red B1";
+	private final String redC1 = "Red C1";
+	//Blue autonomous choices
+	//private final String blueA1 = "Blue A1";
+	//private final String blueB1 = "Blue B1";
+	//private final String blueC1 = "Blue C1";
+	
+	private String autoSelected;
+	private SendableChooser<String> chooser = new SendableChooser<>();
 
 	public final double PERIODIC_DELAY = 0.005f;
 
@@ -72,9 +78,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		chooser.addDefault("Center Gear", centerGear);
-		chooser.addObject("Left Gear", leftGear);
-		chooser.addObject("Right Gear", rightGear);
+		chooser.addObject(redA1, redA1);
+		chooser.addDefault(redB1, redB1);
+		chooser.addObject(redC1, redC1);
 		SmartDashboard.putData("Auto choices", chooser);
 
 		pilot = new Controller(0);
@@ -136,21 +142,90 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		switch (autoSelected) {
-			case centerGear:
-				autoCenterGear();
+			case redA1:
+				autoRedA1();
 				break;
-			case leftGear:
-				autoLeftGear();
+			case redB1:
+				autoRedB1();
 				break;
-			case rightGear:
-				autoRightGear();
+			case redC1:
+				autoRedC1();
 				break;
 			default:
 				break;
 		}
 	}
 	
-	private void autoCenterGear(){ //ADD Ultrasonic or at least time safety fallback (probably just time)
+	private void autoRedA1(){
+		autoAGear();
+		autoTurn(-30);
+		autoMove(0.7f, 1f);
+		
+		autoEnd();
+	}
+	
+	private void autoRedA2(){
+		autoAGear();
+		autoTurn(-30);
+		autoMove(0.7f, 4f);
+		
+		autoEnd();
+	}
+	
+	private void autoRedA3(){
+		autoAGear();
+		autoTurn(-30);
+		autoMove(0.7f, 1.5f);
+		autoTurn(15f);
+		autoMove(0.7f, 3f);
+		autoTurn(-105f);
+		autoMove(0.7f, 1f);
+		
+		autoEnd();
+	}
+	
+	private void autoRedB1(){
+		autoBGear();
+		autoTurn(-60);
+		
+		autoEnd();
+	}
+	
+	private void autoRedC1(){
+		autoCGear();
+		autoTurn(30);
+		autoMove(0.7f, 1f);
+		
+		autoEnd();
+	}
+	
+	private void autoRedC2(){
+		autoCGear();
+		autoTurn(30);
+		autoMove(0.7f, 4f);
+		
+		autoEnd();
+	}
+	
+	private void autoRedC3(){
+		autoCGear();
+		
+		autoEnd();
+	}
+
+	private void autoAGear(){
+		autoMove(0.7f, 3.15f);
+		autoTurn(30);
+		Timer.delay(0.5f);
+		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
+			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		}
+		autoTurn(adjustValue);
+		deliverGear();
+	}
+	
+	private void autoBGear(){ //ADD Ultrasonic or at least time safety fallback (probably just time)
 		//THIS WILL REPLACE THE autoMove(0.6f, 2f); CALL
 		/*
 		double start = Timer.getFPGATimestamp();
@@ -161,50 +236,13 @@ public class Robot extends IterativeRobot {
 			Timer.delay(PERIODIC_DELAY);
 		}
 		*/
-		autoMove(0.6f, 2f);
 		
-		boolean triggered = false;
-		gyro.reset();
-		while(!triggered){
-			angle = gyro.getAngle();
-			drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
-			if(gearCatcher.getTriggerState()){
-				triggered = true;
-				deliverGear();
-			}
-			
-			Timer.delay(PERIODIC_DELAY);
-		}
-		autoEnd();
-	}
-
-	private void autoLeftGear(){
-		autoMove(0.7f, 3.15f);
-		autoTurn(30);
-		Timer.delay(0.5f);
-		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
-			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-		}
-		autoTurn(adjustValue);
-		boolean triggered = false;
-		gyro.reset();
-		while(!triggered){
-			angle = gyro.getAngle();
-			drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
-			if(gearCatcher.getTriggerState()){
-				triggered = true;
-				deliverGear();
-			}
-			
-			Timer.delay(PERIODIC_DELAY);
-		}
-		autoTurn(-30);
-		autoMove(0.7f, 3f);
-		autoEnd();
+		autoMove(0.6f, 2f);
+		//Add angle adjustment?
+		deliverGear();
 	}
 	
-	private void autoRightGear(){
+	private void autoCGear(){
 		autoMove(0.7f, 3.15f);
 		autoTurn(-30);
 		Timer.delay(0.5f);
@@ -213,6 +251,10 @@ public class Robot extends IterativeRobot {
 			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 		}
 		autoTurn(adjustValue);
+		deliverGear();
+	}
+	
+	private void deliverGear(){ //tweak this
 		boolean triggered = false;
 		gyro.reset();
 		while(!triggered){
@@ -220,14 +262,13 @@ public class Robot extends IterativeRobot {
 			drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
 			if(gearCatcher.getTriggerState()){
 				triggered = true;
-				deliverGear();
+				gearCatcher.open(); //Change the release maybe
+				autoMove(-0.7f, 2f);
+				gearCatcher.close();
 			}
 			
 			Timer.delay(PERIODIC_DELAY);
 		}
-		autoTurn(30);
-		autoMove(0.7f, 3f);
-		autoEnd();
 	}
 	
 	private void autoMove(double speed, double time){
@@ -275,12 +316,6 @@ public class Robot extends IterativeRobot {
 		while(isAutonomous()){
 			drive.tankDrive(0f, 0f);
 		}
-	}
-	
-	private void deliverGear(){
-		gearCatcher.open();
-		autoMove(-0.7f, 2f);
-		gearCatcher.close();
 	}
 
 	@Override
