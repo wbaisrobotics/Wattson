@@ -1,23 +1,27 @@
 package org.usfirst.frc.team4338.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DigitalOutput;
 
 public class GearCatcher{
     DigitalInput trigger;
-    DoubleSolenoid pistons;
+    DigitalOutput reverseRelay;
+    DigitalOutput forwardRelay;
 
     public GearCatcher(){
         trigger = new DigitalInput(0);
-        pistons = new DoubleSolenoid(0, 1);
+        reverseRelay = new DigitalOutput(1);
+        forwardRelay = new DigitalOutput(2);
     }
 
     public void open(){
-        pistons.set(DoubleSolenoid.Value.kReverse);
+        forwardRelay.set(true);
+        reverseRelay.set(false);
     }
 
     public void close(){
-        pistons.set(DoubleSolenoid.Value.kForward);
+    	forwardRelay.set(false);
+    	reverseRelay.set(true);
     }
 
     public boolean getTriggerState(){

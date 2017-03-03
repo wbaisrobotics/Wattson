@@ -3,7 +3,6 @@ package org.usfirst.frc.team4338.robot;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Servo;
@@ -54,9 +53,6 @@ public class Robot extends IterativeRobot {
 	
 	private AnalogInput gearSonic;
 	
-	private DigitalOutput gearRelay;
-	private DigitalOutput ballRelay;
-	
 	private boolean state = false;
 	private double lastDebounceTime = 0f;
 	private double debounceDelay = 0.05f;
@@ -93,11 +89,6 @@ public class Robot extends IterativeRobot {
 		climber = new Victor(8);
 		
 		gearSonic = new AnalogInput(2); //Which channel to use?
-		
-		gearRelay = new DigitalOutput(1);
-		ballRelay = new DigitalOutput(2);
-		gearRelay.set(true);
-		ballRelay.set(false);
 	}
 
 	/**
@@ -293,11 +284,11 @@ public class Robot extends IterativeRobot {
 		//Update the state
 		state = SmartDashboard.getBoolean("state", false);
 		if(state){
-			gearRelay.set(false);
-			ballRelay.set(true);
+			//gearRelay.set(false);
+			//ballRelay.set(true);
 		} else{
-			gearRelay.set(true);
-			ballRelay.set(false);
+			//gearRelay.set(true);
+			//ballRelay.set(false);
 		}
 		
 		//--------------- PILOT CONTROLS ---------------
