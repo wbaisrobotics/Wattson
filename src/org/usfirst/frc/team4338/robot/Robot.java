@@ -216,19 +216,19 @@ public class Robot extends IterativeRobot {
 	
 	private void autoRedB1(){
 		autoBGear();
-		autoTurn(-60);
+		autoTurn(-90);
 		autoMove(0.7f, 1.5f);
-		autoTurn(60);
-		autoMove(0.7f, 1f);
+		autoTurn(90);
+		autoMove(0.7f, 2f);
 		
 		autoEnd();
 	}
 	
 	private void autoRedB2(){
 		autoBGear();
-		autoTurn(-60);
+		autoTurn(-90);
 		autoMove(0.7f, 1.5f);
-		autoTurn(60);
+		autoTurn(90);
 		autoMove(0.7f, 4f);
 		
 		autoEnd();
@@ -236,10 +236,10 @@ public class Robot extends IterativeRobot {
 	
 	private void autoRedB3(){
 		autoBGear();
-		autoTurn(-60);
+		autoTurn(-90);
 		autoMove(0.7f, 1.5f);
-		autoTurn(60);
-		autoMove(0.7f, 1f);
+		autoTurn(90);
+		autoMove(0.7f, 2f);
 		autoTurn(15);
 		autoMove(0.7f, 3f);
 		autoTurn(-105);
@@ -280,14 +280,8 @@ public class Robot extends IterativeRobot {
 	private void autoAGear(){
 		autoMove(0.7f, 3.15f);
 		autoTurn(30);
-		Timer.delay(0.5f);
-		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-		//THIS COULD HAVE A BUG
-		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
-			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-		}
-		autoTurn(adjustValue);
-		deliverGear();
+		autoAdjustAngle();
+		autoDeliverGear();
 	}
 	
 	private void autoBGear(){ //ADD Ultrasonic or at least time safety fallback (probably just time)
@@ -304,12 +298,18 @@ public class Robot extends IterativeRobot {
 		
 		autoMove(0.6f, 2f);
 		//Add angle adjustment?
-		deliverGear();
+		//autoAdjustAngle();
+		autoDeliverGear();
 	}
 	
 	private void autoCGear(){
 		autoMove(0.7f, 3.15f);
 		autoTurn(-30);
+		autoAdjustAngle();
+		autoDeliverGear();
+	}
+	
+	private void autoAdjustAngle(){
 		Timer.delay(0.5f);
 		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 		//THIS COULD HAVE A BUG
@@ -317,10 +317,9 @@ public class Robot extends IterativeRobot {
 			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 		}
 		autoTurn(adjustValue);
-		deliverGear();
 	}
 	
-	private void deliverGear(){ //tweak this
+	private void autoDeliverGear(){ //tweak this
 		boolean triggered = false;
 		gyro.reset();
 		while(!triggered){
@@ -398,7 +397,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("gearSonic", gearSonic.getVoltage());
 		
 		if(gearCatcher.isEnabled() && gearCatcher.getTriggerState()){
-			deliverGear();
+			autoDeliverGear();
 			gearCatcher.disable();
 		}
 		
