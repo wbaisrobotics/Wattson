@@ -12,6 +12,7 @@ public class GearCatcher{
         trigger = new DigitalInput(0);
         reverseRelay = new DigitalOutput(1);
         forwardRelay = new DigitalOutput(2);
+        close();
     }
 
     public void open(){
