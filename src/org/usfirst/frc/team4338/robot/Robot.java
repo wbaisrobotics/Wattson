@@ -154,35 +154,16 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		switch (autoSelected) {
-			case redA1:
-				autoRedA1();
-				break;
-			case redA2:
-				autoRedA2();
-				break;
-			case redA3:
-				autoRedA3();
-				break;
-			case redB1:
-				autoRedB1();
-				break;
-			case redB2:
-				autoRedB2();
-				break;
-			case redB3:
-				autoRedB3();
-				break;
-			case redC1:
-				autoRedC1();
-				break;
-			case redC2:
-				autoRedC2();
-				break;
-			case redC3:
-				autoRedC3();
-				break;
-			default:
-				break;
+			case redA1: autoRedA1(); break;
+			case redA2: autoRedA2(); break;
+			case redA3: autoRedA3(); break;
+			case redB1: autoRedB1(); break;
+			case redB2: autoRedB2(); break;
+			case redB3: autoRedB3(); break;
+			case redC1: autoRedC1(); break;
+			case redC2: autoRedC2(); break;
+			case redC3: autoRedC3(); break;
+			default: break;
 		}
 	}
 	
@@ -311,11 +292,12 @@ public class Robot extends IterativeRobot {
 	private void autoAdjustAngle(){
 		Timer.delay(0.5f);
 		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-		//THIS COULD HAVE A BUG
 		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
 			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 		}
-		autoTurn(adjustValue);
+		if(isAutonomous()){ //Only turn if in autonomous (just in case)
+			autoTurn(adjustValue);
+		}
 	}
 	
 	private void autoDeliverGear(){ //tweak this
