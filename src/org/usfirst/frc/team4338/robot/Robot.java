@@ -23,12 +23,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	//Red autonomous choices
+	private final String redA0 = "Red A0";
 	private final String redA1 = "Red A1";
 	private final String redA2 = "Red A2";
 	private final String redA3 = "Red A3";
+	private final String redB0 = "Red B0";
 	private final String redB1 = "Red B1";
 	private final String redB2 = "Red B2";
 	private final String redB3 = "Red B3";
+	private final String redC0 = "Red C0";
 	private final String redC1 = "Red C1";
 	private final String redC2 = "Red C2";
 	private final String redC3 = "Red C3";
@@ -84,12 +87,15 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		chooser.addObject(redA0, redA0);
 		chooser.addObject(redA1, redA1);
 		chooser.addObject(redA2, redA2);
 		chooser.addObject(redA3, redA3);
+		chooser.addObject(redB0, redB0);
 		chooser.addDefault(redB1, redB1); //Default
 		chooser.addObject(redB2, redB2);
 		chooser.addObject(redB3, redB3);
+		chooser.addObject(redC0, redC0);
 		chooser.addObject(redC1, redC1);
 		chooser.addObject(redC2, redC2);
 		chooser.addObject(redC3, redC3);
@@ -154,19 +160,28 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		switch (autoSelected) {
+			case redA0: autoRedA0(); break;
 			case redA1: autoRedA1(); break;
 			case redA2: autoRedA2(); break;
 			case redA3: autoRedA3(); break;
+			case redB0: autoRedB0(); break;
 			case redB1: autoRedB1(); break;
 			case redB2: autoRedB2(); break;
 			case redB3: autoRedB3(); break;
+			case redC0: autoRedC0(); break;
 			case redC1: autoRedC1(); break;
 			case redC2: autoRedC2(); break;
 			case redC3: autoRedC3(); break;
 			default: break;
 		}
 	}
-	
+
+	private void autoRedA0(){
+		autoMove(0.7f, 2f);
+
+		autoEnd();
+	}
+
 	private void autoRedA1(){
 		autoAGear();
 		autoTurn(-30);
@@ -193,6 +208,10 @@ public class Robot extends IterativeRobot {
 		autoMove(0.7f, 1f);
 		
 		autoEnd();
+	}
+
+	private void autoRedB0(){
+
 	}
 	
 	private void autoRedB1(){
@@ -226,6 +245,12 @@ public class Robot extends IterativeRobot {
 		autoTurn(-105);
 		autoMove(0.7f, 1f);
 		
+		autoEnd();
+	}
+
+	private void autoRedC0(){
+		autoMove(0.7f, 2f);
+
 		autoEnd();
 	}
 	
