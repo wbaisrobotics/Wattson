@@ -13,10 +13,10 @@ public class Shooter{
         wheel = new Victor(3);
         feeder = new Victor(4);
     }
-
-    public void set(double wheelSpeed, double feederSpeed){
-        wheel.set(wheelSpeed);
-        feeder.set(feederSpeed);
+    
+    public void stop(){
+    	wheel.set(0f);
+    	feeder.set(0f);
     }
     
     public void setWheel(double wheelSpeed){
@@ -31,7 +31,7 @@ public class Shooter{
     	return wheel.get();
     }
     
-    public void resetStart(){
+    public void resetDelay(){
     	start = Timer.getFPGATimestamp();
     }
     

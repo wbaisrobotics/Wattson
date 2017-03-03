@@ -469,41 +469,34 @@ public class Robot extends IterativeRobot {
 		
 		//Shooting
 		if(copilot.getLeftTrigger() > 0){
-			shooter.set(-0.75f, 0f);
+			shooter.setWheel(-0.75f);
 			if(copilot.getButtonLB()){ //CHANGE THIS TO AUTO START WITH DELAY
-				shooter.set(-0.75f, -0.55f);
+				shooter.setFeeder(-0.55f);
 				ballElevator.set(0f, 1f);
 			}
 		} else if(copilot.getButtonRB()){ //Ball unjamming
-			shooter.set(1f, 1f);
+			shooter.setWheel(1f);
+			shooter.setFeeder(0.55f);
 		} else{
-			shooter.set(0f, 0f);
+			shooter.stop();
 		}
 		
-		//Shooting
 		/*
+		//Shooting *simplified* NEED TO TEST
 		if(copilot.getLeftTrigger() > 0){
 			if(shooter.getWheelSpeed() == 0){
-				shooter.set(-0.82f, 0f);
-				shooter.resetStart();
-			} else if(shooter.canFeed()){
-				shooter.set(-0.82f, -0.75f);
+				shooter.resetDelay();
+			}
+			shooter.setWheel(-0.82f);
+			if(shooter.canFeed()){
+				shooter.setFeeder(-0.55f);
 				ballElevator.set(0f, 1f);
 			}
+		} else if(copilot.getButtonRB()){
+			shooter.setWheel(1f);
+			shooter.setFeeder(0.55f);
 		} else{
-			shooter.setFeeder(0f);
-		}
-		if(copilot.getButtonB()){
-			shooter.set(0f, 0f);
-		}
-		if(copilot.getButtonRB()){
-			shooter.set(0.7f, 1f);
-		} else{
-			if(shooter.getWheelSpeed() < 0){ //FIX THIS
-				shooter.setFeeder(0f);
-			} else{
-				shooter.set(0f, 0f);
-			}
+			shooter.stop();
 		}
 		*/
 		
