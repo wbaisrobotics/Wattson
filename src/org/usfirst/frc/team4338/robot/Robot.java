@@ -24,8 +24,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 	//Red autonomous choices
 	private final String redA1 = "Red A1";
+	private final String redA2 = "Red A2";
+	private final String redA3 = "Red A3";
 	private final String redB1 = "Red B1";
+	private final String redB2 = "Red B2";
+	private final String redB3 = "Red B3";
 	private final String redC1 = "Red C1";
+	private final String redC2 = "Red C2";
+	private final String redC3 = "Red C3";
 	//Blue autonomous choices
 	//private final String blueA1 = "Blue A1";
 	//private final String blueB1 = "Blue B1";
@@ -79,8 +85,14 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		chooser.addObject(redA1, redA1);
-		chooser.addDefault(redB1, redB1);
+		chooser.addObject(redA2, redA2);
+		chooser.addObject(redA3, redA3);
+		chooser.addDefault(redB1, redB1); //Default
+		chooser.addObject(redB2, redB2);
+		chooser.addObject(redB3, redB3);
 		chooser.addObject(redC1, redC1);
+		chooser.addObject(redC2, redC2);
+		chooser.addObject(redC3, redC3);
 		SmartDashboard.putData("Auto choices", chooser);
 
 		pilot = new Controller(0);
@@ -145,11 +157,29 @@ public class Robot extends IterativeRobot {
 			case redA1:
 				autoRedA1();
 				break;
+			case redA2:
+				autoRedA2();
+				break;
+			case redA3:
+				autoRedA3();
+				break;
 			case redB1:
 				autoRedB1();
 				break;
+			case redB2:
+				autoRedB2();
+				break;
+			case redB3:
+				autoRedB3();
+				break;
 			case redC1:
 				autoRedC1();
+				break;
+			case redC2:
+				autoRedC2();
+				break;
+			case redC3:
+				autoRedC3();
 				break;
 			default:
 				break;
@@ -176,9 +206,9 @@ public class Robot extends IterativeRobot {
 		autoAGear();
 		autoTurn(-30);
 		autoMove(0.7f, 1.5f);
-		autoTurn(15f);
+		autoTurn(15);
 		autoMove(0.7f, 3f);
-		autoTurn(-105f);
+		autoTurn(-105);
 		autoMove(0.7f, 1f);
 		
 		autoEnd();
@@ -187,6 +217,33 @@ public class Robot extends IterativeRobot {
 	private void autoRedB1(){
 		autoBGear();
 		autoTurn(-60);
+		autoMove(0.7f, 1.5f);
+		autoTurn(60);
+		autoMove(0.7f, 1f);
+		
+		autoEnd();
+	}
+	
+	private void autoRedB2(){
+		autoBGear();
+		autoTurn(-60);
+		autoMove(0.7f, 1.5f);
+		autoTurn(60);
+		autoMove(0.7f, 4f);
+		
+		autoEnd();
+	}
+	
+	private void autoRedB3(){
+		autoBGear();
+		autoTurn(-60);
+		autoMove(0.7f, 1.5f);
+		autoTurn(60);
+		autoMove(0.7f, 1f);
+		autoTurn(15);
+		autoMove(0.7f, 3f);
+		autoTurn(-105);
+		autoMove(0.7f, 1f);
 		
 		autoEnd();
 	}
@@ -202,13 +259,20 @@ public class Robot extends IterativeRobot {
 	private void autoRedC2(){
 		autoCGear();
 		autoTurn(30);
-		autoMove(0.7f, 4f);
+		autoMove(0.7f, 1.5f);
+		autoTurn(-45);
+		autoMove(0.7f, 3f);
+		autoTurn(45);
 		
 		autoEnd();
 	}
 	
 	private void autoRedC3(){
 		autoCGear();
+		autoTurn(30);
+		autoMove(0.7f, 4f);
+		autoTurn(-90);
+		autoMove(0.7f, 3f);
 		
 		autoEnd();
 	}
@@ -218,6 +282,7 @@ public class Robot extends IterativeRobot {
 		autoTurn(30);
 		Timer.delay(0.5f);
 		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		//THIS COULD HAVE A BUG
 		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
 			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 		}
@@ -226,7 +291,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void autoBGear(){ //ADD Ultrasonic or at least time safety fallback (probably just time)
-		//THIS WILL REPLACE THE autoMove(0.6f, 2f); CALL
+		//THIS COULD REPLACE THE autoMove(0.6f, 2f); CALL
 		/*
 		double start = Timer.getFPGATimestamp();
 		gyro.reset();
@@ -247,6 +312,7 @@ public class Robot extends IterativeRobot {
 		autoTurn(-30);
 		Timer.delay(0.5f);
 		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+		//THIS COULD HAVE A BUG
 		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
 			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 		}
