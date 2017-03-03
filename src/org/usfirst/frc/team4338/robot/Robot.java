@@ -36,7 +36,7 @@ public class Robot extends IterativeRobot {
 	//private final String blueA1 = "Blue A1";
 	//private final String blueB1 = "Blue B1";
 	//private final String blueC1 = "Blue C1";
-	
+
 	private String autoSelected;
 	private SendableChooser<String> chooser = new SendableChooser<>();
 
@@ -297,8 +297,7 @@ public class Robot extends IterativeRobot {
 		*/
 		
 		autoMove(0.6f, 2f);
-		//Add angle adjustment?
-		//autoAdjustAngle();
+		autoAdjustAngle();
 		autoDeliverGear();
 	}
 	
