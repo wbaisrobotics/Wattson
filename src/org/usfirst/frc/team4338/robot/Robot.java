@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,25 +22,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	//Red autonomous choices
-	private final String redA0 = "Red A0";
-	private final String redA1 = "Red A1";
-	private final String redA2 = "Red A2";
-	private final String redA3 = "Red A3";
-	private final String redB0 = "Red B0";
-	private final String redB1 = "Red B1";
-	private final String redB2 = "Red B2";
-	private final String redB3 = "Red B3";
-	private final String redC0 = "Red C0";
-	private final String redC1 = "Red C1";
-	private final String redC2 = "Red C2";
-	private final String redC3 = "Red C3";
+	final String redA0 = "Red A0";
+	final String redA1 = "Red A1";
+	final String redA2 = "Red A2";
+	final String redA3 = "Red A3";
+	final String redB0 = "Red B0";
+	final String redB1 = "Red B1";
+	final String redB2 = "Red B2";
+	final String redB3 = "Red B3";
+	final String redC0 = "Red C0";
+	final String redC1 = "Red C1";
+	final String redC2 = "Red C2";
+	final String redC3 = "Red C3";
 	//Blue autonomous choices
+	final String blueC1 = "Blue C1";
 	//private final String blueA1 = "Blue A1";
 	//private final String blueB1 = "Blue B1";
 	//private final String blueC1 = "Blue C1";
 
-	private String autoSelected;
-	private SendableChooser<String> chooser = new SendableChooser<>();
+	String autoSelected;
+	SendableChooser<String> chooser = new SendableChooser<>();
 
 	public final double PERIODIC_DELAY = 0.005f;
 
@@ -87,19 +87,23 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		chooser.addObject(redA0, redA0);
-		chooser.addObject(redA1, redA1);
-		chooser.addObject(redA2, redA2);
-		chooser.addObject(redA3, redA3);
-		chooser.addObject(redB0, redB0);
-		chooser.addDefault(redB1, redB1); //Default
-		chooser.addObject(redB2, redB2);
-		chooser.addObject(redB3, redB3);
-		chooser.addObject(redC0, redC0);
-		chooser.addObject(redC1, redC1);
-		chooser.addObject(redC2, redC2);
-		chooser.addObject(redC3, redC3);
+		chooser.addObject("Red A0", redA0);
+		chooser.addObject("Red A1", redA1);
+		chooser.addObject("Red A2", redA2);
+		chooser.addObject("Red A3", redA3);
+		chooser.addObject("Red B0", redB0);
+		chooser.addDefault("Red B1", redB1); //Default
+		chooser.addObject("Red B2", redB2);
+		chooser.addObject("Red B3", redB3);
+		chooser.addObject("Red C0", redC0);
+		chooser.addObject("Red C1", redC1);
+		chooser.addObject("Red C2", redC2);
+		chooser.addObject("Red C3", redC3);
+		
+		chooser.addObject("Blue C1", blueC1);
 		SmartDashboard.putData("Auto choices", chooser);
+		
+		SmartDashboard.putBoolean("state", false);
 
 		pilot = new Controller(0);
 		copilot = new Controller(1);
@@ -172,6 +176,8 @@ public class Robot extends IterativeRobot {
 			case redC1: autoRedC1(); break;
 			case redC2: autoRedC2(); break;
 			case redC3: autoRedC3(); break;
+			
+			case blueC1: autoBlueC1(); break;
 			default: break;
 		}
 	}
@@ -184,8 +190,8 @@ public class Robot extends IterativeRobot {
 
 	private void autoRedA1(){
 		autoAGear();
-		autoTurn(-30);
-		autoMove(0.7f, 1f);
+		autoTurn(-70);
+		autoMove(1f, 4f);
 		
 		autoEnd();
 	}
@@ -214,12 +220,12 @@ public class Robot extends IterativeRobot {
 
 	}
 	
-	private void autoRedB1(){
+	private void autoRedB1(){ //Tested ok~
 		autoBGear();
-		autoTurn(-90);
-		autoMove(0.7f, 1.5f);
-		autoTurn(90);
-		autoMove(0.7f, 2f);
+		autoTurn(-80);
+		autoMove(1f, 2f);
+		autoTurn(80);
+		autoMove(1f, 4f);
 		
 		autoEnd();
 	}
@@ -254,10 +260,10 @@ public class Robot extends IterativeRobot {
 		autoEnd();
 	}
 	
-	private void autoRedC1(){
+	private void autoRedC1(){ //Tested
 		autoCGear();
-		autoTurn(30);
-		autoMove(0.7f, 1f);
+		autoTurn(70);
+		autoMove(1f, 4f);
 		
 		autoEnd();
 	}
@@ -282,12 +288,21 @@ public class Robot extends IterativeRobot {
 		
 		autoEnd();
 	}
+	
+	private void autoBlueC1(){
+		autoBlueCGear();
+		autoTurn(70);
+		autoMove(1f, 4f);
+		
+		autoEnd();
+	}
 
 	private void autoAGear(){
-		autoMove(0.7f, 3.15f);
-		autoTurn(30);
+		autoMove(0.85f, 2.3f);
+		autoTurn(60);
 		autoAdjustAngle();
 		autoDeliverGear();
+		autoMove(-0.75f, 0.5f);
 	}
 	
 	private void autoBGear(){ //ADD Ultrasonic or at least time safety fallback (probably just time)
@@ -302,16 +317,25 @@ public class Robot extends IterativeRobot {
 		}
 		*/
 		
-		autoMove(0.6f, 2f);
-		autoAdjustAngle();
+		autoMove(0.7f, 1.9f);
+		//autoAdjustAngle();
 		autoDeliverGear();
 	}
 	
 	private void autoCGear(){
-		autoMove(0.7f, 3.15f);
-		autoTurn(-30);
+		autoMove(0.85f, 2.3f);
+		autoTurn(-65);
 		autoAdjustAngle();
 		autoDeliverGear();
+		autoMove(-0.75f, 0.5f);
+	}
+	
+	private void autoBlueCGear(){
+		autoMove(0.85f, 2.4f);
+		autoTurn(-65);
+		autoAdjustAngle();
+		autoDeliverGear();
+		autoMove(-0.75f, 0.5f);
 	}
 	
 	private void autoAdjustAngle(){
@@ -321,7 +345,11 @@ public class Robot extends IterativeRobot {
 			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 		}
 		if(isAutonomous()){ //Only turn if in autonomous (just in case)
-			autoTurn(adjustValue);
+			if(adjustValue > 0){
+				autoTurn(adjustValue + 2);
+			} else if(adjustValue < 0){
+				autoTurn(adjustValue - 2);
+			}
 		}
 	}
 	
@@ -334,7 +362,7 @@ public class Robot extends IterativeRobot {
 			if(gearCatcher.getTriggerState()){
 				triggered = true;
 				gearCatcher.open(); //Change the release maybe
-				autoMove(-0.7f, 2f);
+				autoMove(-0.75f, 1.25f);
 				gearCatcher.close();
 			}
 			
@@ -362,13 +390,15 @@ public class Robot extends IterativeRobot {
 		if(Math.signum(turnAngle) > 0){ //Turn right
 			while(angle < turnAngle - 8){
 				angle = gyro.getAngle();
-				drive.tankDrive(-0.5f, 0.5f);
+				SmartDashboard.putNumber("angle", angle);
+				drive.tankDrive(-0.7f, 0.7f);
 				Timer.delay(PERIODIC_DELAY);
 			}
 		} else if(Math.signum(turnAngle) < 0){ //Turn left
 			while(angle > turnAngle + 8){
 				angle = gyro.getAngle();
-				drive.tankDrive(0.5f, -0.5f);
+				SmartDashboard.putNumber("angle", angle);
+				drive.tankDrive(0.7f, -0.7f);
 				Timer.delay(PERIODIC_DELAY);
 			}
 		}
@@ -400,7 +430,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		SmartDashboard.putNumber("gearSonic", gearSonic.getVoltage());
+		//SmartDashboard.putNumber("gearSonic", gearSonic.getVoltage());
 		
 		if(gearCatcher.isEnabled() && gearCatcher.getTriggerState()){
 			autoDeliverGear();
@@ -420,7 +450,7 @@ public class Robot extends IterativeRobot {
 		//--------------- PILOT CONTROLS ---------------
 		//IS SOME OF THIS REDUNDENT?
 		//State switching
-		boolean toggleReading = pilot.getButtonX();
+		boolean toggleReading = pilot.getButtonA();
 		if(toggleReading != lastToggleState){
 			lastDebounceTime = Timer.getFPGATimestamp();
 		}
@@ -434,11 +464,6 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		lastToggleState = toggleReading;
-		
-		//Enable gear catcher
-		if(pilot.getButtonA()){
-			gearCatcher.enable();
-		}
 		
 		//Driving
 		double x = pilot.getRightJoyX();
@@ -479,6 +504,8 @@ public class Robot extends IterativeRobot {
 			if(copilot.getButtonLB()){ //CHANGE THIS TO AUTO START WITH DELAY
 				shooter.setFeeder(-0.55f);
 				ballElevator.set(0f, 1f);
+			} else{
+				shooter.setFeeder(0f);
 			}
 		} else if(copilot.getButtonRB()){ //Ball unjamming
 			shooter.setWheel(1f);
@@ -524,6 +551,12 @@ public class Robot extends IterativeRobot {
 		if(copilot.getButtonX()){
 			gearCatcher.close();
 		}
+		
+		//Enable the gear catcher
+		if(copilot.getButtonY()){
+			gearCatcher.enable();
+		}
+		
 		/* Uncomment this if we find we need the option
 		if(copilot.getButtonY()){
 			gearCatcher.open();
