@@ -68,7 +68,7 @@ public class Robot extends IterativeRobot {
 	private BallShelf ballShelf;
 	private Shooter shooter;
 	private GearCatcher gearCatcher;
-	private Victor climber;
+	private Climber climber;
 	
 	private AnalogInput gearSonic;
 	
@@ -122,7 +122,7 @@ public class Robot extends IterativeRobot {
 		ballShelf = new BallShelf();
 		shooter = new Shooter();
 		gearCatcher = new GearCatcher();
-		climber = new Victor(0);
+		climber = new Climber();
 		
 		gearSonic = new AnalogInput(2); //Which channel to use?
 		
@@ -508,11 +508,11 @@ public class Robot extends IterativeRobot {
 		
 		//Climber
 		if(copilot.getPOV() == Controller.POVUP){
-			climber.set(1f);
+			climber.up();
 		} else if(copilot.getPOV() == Controller.POVDOWN){
-			climber.set(-1f);
+			climber.down();
 		} else{
-			climber.set(0f);
+			climber.stop();
 		}
 		
 		//Retry shelf extension
