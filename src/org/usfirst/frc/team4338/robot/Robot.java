@@ -81,6 +81,8 @@ public class Robot extends IterativeRobot {
 	private boolean toggleState = false;
 	private boolean lastToggleState = false;
 
+	private boolean autoStop = false;
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -154,6 +156,7 @@ public class Robot extends IterativeRobot {
 		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
 
+		SmartDashboard.putBoolean("autoEnd", false);
 		ballShelf.release();
 		gyro.reset();
 	}
@@ -301,7 +304,7 @@ public class Robot extends IterativeRobot {
 		autoMove(0.85f, 2.3f);
 		autoTurn(60);
 		autoAdjustAngle();
-		autoDeliverGear();
+		autoDeliverSideGear();
 		autoMove(-0.75f, 0.5f);
 	}
 	
@@ -319,14 +322,14 @@ public class Robot extends IterativeRobot {
 		
 		autoMove(0.7f, 1.9f);
 		//autoAdjustAngle();
-		autoDeliverGear();
+		autoDeliverCenterGear();
 	}
 	
 	private void autoCGear(){
 		autoMove(0.85f, 2.3f);
 		autoTurn(-65);
 		autoAdjustAngle();
-		autoDeliverGear();
+		autoDeliverSideGear();
 		autoMove(-0.75f, 0.5f);
 	}
 	
@@ -334,86 +337,123 @@ public class Robot extends IterativeRobot {
 		autoMove(0.85f, 2.4f);
 		autoTurn(-65);
 		autoAdjustAngle();
-		autoDeliverGear();
+		autoDeliverSideGear();
 		autoMove(-0.75f, 0.5f);
 	}
 	
 	private void autoAdjustAngle(){
-		Timer.delay(0.5f);
-		double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-		while(adjustValue == -1000 && isAutonomous()){ //Wait for target
-			adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-		}
-		if(isAutonomous()){ //Only turn if in autonomous (just in case)
-			if(adjustValue > 0){
+		if(!autoStop) {
+			Timer.delay(0.5f);
+			double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+			double start = Timer.getFPGATimestamp();
+			while (adjustValue == -1000 && isAutonomous()) { //Wait for target
+				adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+				if(Timer.getFPGATimestamp() - start > 3){ //autoStop after 3s
+					autoStop = true;
+					break;
+				}
+			}
+			if (adjustValue > 0) {
 				autoTurn(adjustValue + 2);
-			} else if(adjustValue < 0){
+			} else if (adjustValue < 0) {
 				autoTurn(adjustValue - 2);
 			}
 		}
 	}
-	
-	private void autoDeliverGear(){ //tweak this
-		boolean triggered = false;
-		gyro.reset();
-		while(!triggered){
-			angle = gyro.getAngle();
-			drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
-			if(gearCatcher.getTriggerState()){
-				triggered = true;
-				gearCatcher.open(); //Change the release maybe
-				autoMove(-0.75f, 1.25f);
-				gearCatcher.close();
+
+	private void autoDeliverSideGear(){
+		if(!autoStop){
+			boolean triggered = false;
+			gyro.reset();
+			double start = Timer.getFPGATimestamp();
+			while(!triggered){
+				if(Timer.getFPGATimestamp() - start > 7){ //Stop creeping after 5s and assume something went wrong
+					autoStop = true;
+					break;
+				}
+
+				angle = gyro.getAngle();
+				drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
+				if(gearCatcher.getTriggerState()){
+					triggered = true;
+					placeGear();
+				}
+
+				Timer.delay(PERIODIC_DELAY);
 			}
-			
-			Timer.delay(PERIODIC_DELAY);
 		}
 	}
 	
-	private void autoMove(double speed, double time){
-		gyro.reset();
-		double start = Timer.getFPGATimestamp();
-		
-		while(Timer.getFPGATimestamp() - start < time){
-			angle = gyro.getAngle();
-			//y + x, y - x
-			drive.tankDrive(speed + angle * kp, speed - angle * kp);
-			Timer.delay(PERIODIC_DELAY);
+	private void autoDeliverCenterGear(){
+		if(!autoStop){
+			boolean triggered = false;
+			gyro.reset();
+			double start = Timer.getFPGATimestamp();
+			while(!triggered){
+				if(Timer.getFPGATimestamp() - start > 5){ //Stop creeping after 5s and assume something went wrong
+					autoStop = true;
+					break;
+				}
+
+				angle = gyro.getAngle();
+				drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
+				if(gearCatcher.getTriggerState()){
+					triggered = true;
+					placeGear();
+				}
+
+				Timer.delay(PERIODIC_DELAY);
+			}
 		}
+	}
+
+	private void placeGear(){
+		gearCatcher.open();
+		autoMove(-0.75f, 1.25f);
+		gearCatcher.close();
+	}
+	
+	private void autoMove(double speed, double time){
+		if(!autoStop){
+			gyro.reset();
+			double start = Timer.getFPGATimestamp();
+
+			while(Timer.getFPGATimestamp() - start < time){
+				angle = gyro.getAngle();
+				//y + x, y - x
+				drive.tankDrive(speed + angle * kp, speed - angle * kp);
+				Timer.delay(PERIODIC_DELAY);
+			}
+		}
+
 		drive.tankDrive(0f, 0f);
 	}
 	
 	private void autoTurn(double turnAngle){
-		gyro.reset();
-		angle = gyro.getAngle();
-		
-		if(Math.signum(turnAngle) > 0){ //Turn right
-			while(angle < turnAngle - 8){
-				angle = gyro.getAngle();
-				SmartDashboard.putNumber("angle", angle);
-				drive.tankDrive(-0.7f, 0.7f);
-				Timer.delay(PERIODIC_DELAY);
-			}
-		} else if(Math.signum(turnAngle) < 0){ //Turn left
-			while(angle > turnAngle + 8){
-				angle = gyro.getAngle();
-				SmartDashboard.putNumber("angle", angle);
-				drive.tankDrive(0.7f, -0.7f);
-				Timer.delay(PERIODIC_DELAY);
-			}
-		}
-		
-		/*
-		while(turnAngle - angle < 0){ //incorrect
+		if(!autoStop){
+			gyro.reset();
 			angle = gyro.getAngle();
-			drive.tankDrive(0.2f * Math.signum(turnAngle), 0.2f * -Math.signum(turnAngle));
-			Timer.delay(PERIODIC_DELAY);
+
+			if(Math.signum(turnAngle) > 0){ //Turn right
+				while(angle < turnAngle - 8){
+					angle = gyro.getAngle();
+					drive.tankDrive(-0.7f, 0.7f);
+					Timer.delay(PERIODIC_DELAY);
+				}
+			} else if(Math.signum(turnAngle) < 0){ //Turn left
+				while(angle > turnAngle + 8){
+					angle = gyro.getAngle();
+					drive.tankDrive(0.7f, -0.7f);
+					Timer.delay(PERIODIC_DELAY);
+				}
+			}
 		}
-		*/
+
 		drive.tankDrive(0f, 0f);
 	}
 	
 	private void autoEnd(){
+		SmartDashboard.putBoolean("autoEnd", true);
 		while(isAutonomous()){
 			drive.tankDrive(0f, 0f);
 		}
@@ -433,7 +473,7 @@ public class Robot extends IterativeRobot {
 		//SmartDashboard.putNumber("gearSonic", gearSonic.getVoltage());
 		
 		if(gearCatcher.isEnabled() && gearCatcher.getTriggerState()){
-			autoDeliverGear();
+			placeGear();
 			gearCatcher.disable();
 		}
 		
