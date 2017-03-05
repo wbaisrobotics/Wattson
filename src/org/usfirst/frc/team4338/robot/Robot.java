@@ -183,12 +183,12 @@ public class Robot extends IterativeRobot {
 	}
 
 	private void autoRedA0(){
-		autoMove(0.7f, 2f);
+		autoMove(1f, 3f);
 
 		autoEnd();
 	}
 
-	private void autoRedA1(){
+	private void autoRedA1(){ //Tested
 		autoAGear();
 		autoTurn(-70);
 		autoMove(1f, 4f);
@@ -255,7 +255,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	private void autoRedC0(){
-		autoMove(0.7f, 2f);
+		autoMove(1f, 3f);
 
 		autoEnd();
 	}
@@ -289,7 +289,7 @@ public class Robot extends IterativeRobot {
 		autoEnd();
 	}
 	
-	private void autoBlueC1(){
+	private void autoBlueC1(){ //Tested
 		autoBlueCGear();
 		autoTurn(70);
 		autoMove(1f, 4f);
