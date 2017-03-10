@@ -513,7 +513,7 @@ public class Robot extends IterativeRobot {
 		
 		if(pilot.getLeftTrigger() > 0){ //High gear driving
 			shiftHigh();
-			x *= 0.5f; //decreased from 0.7f, was too fast turning in high gear, Maybe make this lower
+			x *= getXScale(y);
 			y *= state ? 1f : -1f;
 		} else{ //Low gear driving
 			shiftLow();
@@ -604,6 +604,10 @@ public class Robot extends IterativeRobot {
 		*/
 
 		Timer.delay(PERIODIC_DELAY);
+	}
+
+	private double getXScale(double y){ //Logistic function to limit turning speed based on forward speed
+		return 1 - 0.5f / (1 + Math.pow(Math.E, -10 * (Math.abs(y) - 0.5f)));
 	}
 
 	private void shiftHigh(){
