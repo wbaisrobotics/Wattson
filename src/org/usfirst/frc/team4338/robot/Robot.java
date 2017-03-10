@@ -523,6 +523,9 @@ public class Robot extends IterativeRobot {
 				//drive.tankDrive(0.7f * turn, 0.7f * -turn);
 				x = 0.7f * turn; //Use x so the wheels turn opposite
 				y = 0;
+			} else if(pilot.getButtonLB()){ //MAX low gear pushing
+				x *= 0.7f; //Maybe turn this down
+				y *= state ? 1f : -1f;
 			} else{
 				x *= 0.7f;
 				y *= state ? 0.8f : -0.8f;
