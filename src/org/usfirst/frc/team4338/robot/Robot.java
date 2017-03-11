@@ -3,7 +3,6 @@ package org.usfirst.frc.team4338.robot;
 import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -22,18 +21,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	//Red autonomous choices
+	final String nothing = "Nothing";
 	final String redA0 = "Red A0";
 	final String redA1 = "Red A1";
-	final String redA2 = "Red A2";
-	final String redA3 = "Red A3";
 	final String redB0 = "Red B0";
 	final String redB1 = "Red B1";
-	final String redB2 = "Red B2";
-	final String redB3 = "Red B3";
 	final String redC0 = "Red C0";
 	final String redC1 = "Red C1";
-	final String redC2 = "Red C2";
-	final String redC3 = "Red C3";
 	//Blue autonomous choices
 	final String blueC1 = "Blue C1";
 	//final String blueA1 = "Blue A1";
@@ -70,8 +64,6 @@ public class Robot extends IterativeRobot {
 	private GearCatcher gearCatcher;
 	private Climber climber;
 	
-	private AnalogInput gearSonic;
-	
 	private DigitalOutput gearRelay;
 	private DigitalOutput ballRelay;
 	
@@ -89,18 +81,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		chooser.addDefault("Nothing", nothing);
 		chooser.addObject("Red A0", redA0);
 		chooser.addObject("Red A1", redA1);
-		//chooser.addObject("Red A2", redA2);
-		//chooser.addObject("Red A3", redA3);
 		chooser.addObject("Red B0", redB0);
-		chooser.addDefault("Red B1", redB1); //Default
-		//chooser.addObject("Red B2", redB2);
-		//chooser.addObject("Red B3", redB3);
+		chooser.addObject("Red B1", redB1);
 		chooser.addObject("Red C0", redC0);
 		chooser.addObject("Red C1", redC1);
-		//chooser.addObject("Red C2", redC2);
-		//chooser.addObject("Red C3", redC3);
 		
 		chooser.addObject("Blue C1", blueC1);
 		SmartDashboard.putData("Auto choices", chooser);
@@ -129,8 +116,6 @@ public class Robot extends IterativeRobot {
 		shooter = new Shooter();
 		gearCatcher = new GearCatcher();
 		climber = new Climber();
-		
-		gearSonic = new AnalogInput(2); //Which channel to use?
 		
 		gearRelay = new DigitalOutput(1);
 		ballRelay = new DigitalOutput(2);
@@ -167,88 +152,45 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		switch (autoSelected) {
+			case nothing: autoEnd(); break;
 			case redA0: autoRedA0(); break;
 			case redA1: autoRedA1(); break;
-			case redA2: autoRedA2(); break;
-			case redA3: autoRedA3(); break;
 			case redB0: autoRedB0(); break;
 			case redB1: autoRedB1(); break;
-			case redB2: autoRedB2(); break;
-			case redB3: autoRedB3(); break;
 			case redC0: autoRedC0(); break;
 			case redC1: autoRedC1(); break;
-			case redC2: autoRedC2(); break;
-			case redC3: autoRedC3(); break;
-			
 			case blueC1: autoBlueC1(); break;
 			default: break;
 		}
 	}
 
+	//AUTONOMOUS METHODS
 	private void autoRedA0(){
 		autoMove(1f, 3f);
 
 		autoEnd();
 	}
 
-	private void autoRedA1(){ //Tested
+	private void autoRedA1(){
 		autoAGear();
 		autoTurn(-70);
 		autoMove(1f, 4f);
 		
 		autoEnd();
 	}
-	
-	private void autoRedA2(){
-		autoAGear();
-		autoTurn(-30);
-		autoMove(0.7f, 4f);
-		
-		autoEnd();
-	}
-	
-	private void autoRedA3(){
-		autoAGear();
-		autoTurn(-30);
-		autoMove(0.7f, 1.5f);
-		autoTurn(15);
-		autoMove(0.7f, 3f);
-		autoTurn(-105);
-		autoMove(0.7f, 1f);
-		
-		autoEnd();
-	}
 
 	private void autoRedB0(){
+		autoBGear();
 
+		autoEnd();
 	}
 	
 	private void autoRedB1(){
-		autoBGear();
-		
-		autoEnd();
-	}
-	
-	private void autoRedB2(){
 		autoBGear();
 		autoTurn(-80);
 		autoMove(1f, 2f);
 		autoTurn(80);
 		autoMove(1f, 4f);
-		
-		autoEnd();
-	}
-	
-	private void autoRedB3(){
-		autoBGear();
-		autoTurn(-90);
-		autoMove(0.7f, 1.5f);
-		autoTurn(90);
-		autoMove(0.7f, 2f);
-		autoTurn(15);
-		autoMove(0.7f, 3f);
-		autoTurn(-105);
-		autoMove(0.7f, 1f);
 		
 		autoEnd();
 	}
@@ -259,7 +201,7 @@ public class Robot extends IterativeRobot {
 		autoEnd();
 	}
 	
-	private void autoRedC1(){ //Tested
+	private void autoRedC1(){
 		autoCGear();
 		autoTurn(70);
 		autoMove(1f, 4f);
@@ -267,28 +209,7 @@ public class Robot extends IterativeRobot {
 		autoEnd();
 	}
 	
-	private void autoRedC2(){
-		autoCGear();
-		autoTurn(30);
-		autoMove(0.7f, 1.5f);
-		autoTurn(-45);
-		autoMove(0.7f, 3f);
-		autoTurn(45);
-		
-		autoEnd();
-	}
-	
-	private void autoRedC3(){
-		autoCGear();
-		autoTurn(30);
-		autoMove(0.7f, 4f);
-		autoTurn(-90);
-		autoMove(0.7f, 3f);
-		
-		autoEnd();
-	}
-	
-	private void autoBlueC1(){ //Tested
+	private void autoBlueC1(){
 		autoBlueCGear();
 		autoTurn(70);
 		autoMove(1f, 4f);
@@ -296,36 +217,26 @@ public class Robot extends IterativeRobot {
 		autoEnd();
 	}
 
+	//SUB AUTONOMOUS METHODS
 	private void autoAGear(){
 		autoMove(0.85f, 2.2f);
 		autoTurn(60);
 		autoAdjustAngle();
-		autoDeliverSideGear();
+		autoDeliverGear(7f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
-	private void autoBGear(){ //ADD Ultrasonic or at least time safety fallback (probably just time)
-		//THIS COULD REPLACE THE autoMove(0.6f, 2f); CALL
-		/*
-		double start = Timer.getFPGATimestamp();
-		gyro.reset();
-		while(gearSonic.getVoltage() > whatDistance? && Timer.getFPGATimestamp() - start < estimatedTimeToComplete?){
-			angle = gyro.getAngle();
-			drive.tankDrive(0.6f + angle * kp, 0.6f - angle * kp);
-			Timer.delay(PERIODIC_DELAY);
-		}
-		*/
-		
+	private void autoBGear(){
 		autoMove(0.7f, 1.9f);
 		//autoAdjustAngle();
-		autoDeliverCenterGear();
+		autoDeliverGear(5f);
 	}
 	
 	private void autoCGear(){
 		autoMove(0.85f, 2.2f);
 		autoTurn(-65);
 		autoAdjustAngle();
-		autoDeliverSideGear();
+		autoDeliverGear(7f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
@@ -333,7 +244,7 @@ public class Robot extends IterativeRobot {
 		autoMove(0.85f, 2.4f);
 		autoTurn(-65);
 		autoAdjustAngle();
-		autoDeliverSideGear();
+		autoDeliverGear(7f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
@@ -359,36 +270,13 @@ public class Robot extends IterativeRobot {
 		drive.tankDrive(0f, 0f);
 	}
 
-	private void autoDeliverSideGear(){
+	private void autoDeliverGear(double timeout){
 		if(!autoStop){
 			boolean triggered = false;
 			gyro.reset();
 			double start = Timer.getFPGATimestamp();
 			while(!triggered){
-				if(Timer.getFPGATimestamp() - start > 7){ //Stop creeping after 5s and assume something went wrong
-					autoStop = true;
-					break;
-				}
-
-				angle = gyro.getAngle();
-				drive.tankDrive(0.5f + angle * kp, 0.5f - angle * kp);
-				if(gearCatcher.getTriggerState()){
-					triggered = true;
-					placeGear();
-				}
-
-				Timer.delay(PERIODIC_DELAY);
-			}
-		}
-	}
-	
-	private void autoDeliverCenterGear(){
-		if(!autoStop){
-			boolean triggered = false;
-			gyro.reset();
-			double start = Timer.getFPGATimestamp();
-			while(!triggered){
-				if(Timer.getFPGATimestamp() - start > 5){ //Stop creeping after 5s and assume something went wrong
+				if(Timer.getFPGATimestamp() - start > timeout){
 					autoStop = true;
 					break;
 				}
@@ -468,8 +356,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		//SmartDashboard.putNumber("gearSonic", gearSonic.getVoltage());
-		
 		if(gearCatcher.isEnabled() && gearCatcher.getTriggerState()){
 			placeGear();
 			gearCatcher.disable();
@@ -486,7 +372,6 @@ public class Robot extends IterativeRobot {
 		}
 		
 		//--------------- PILOT CONTROLS ---------------
-		//IS SOME OF THIS REDUNDENT?
 		//State switching
 		boolean toggleReading = pilot.getButtonA();
 		if(toggleReading != lastToggleState){
