@@ -36,9 +36,9 @@ public class Robot extends IterativeRobot {
 	final String redC3 = "Red C3";
 	//Blue autonomous choices
 	final String blueC1 = "Blue C1";
-	//private final String blueA1 = "Blue A1";
-	//private final String blueB1 = "Blue B1";
-	//private final String blueC1 = "Blue C1";
+	//final String blueA1 = "Blue A1";
+	//final String blueB1 = "Blue B1";
+	//final String blueC1 = "Blue C1";
 
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
@@ -91,16 +91,16 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		chooser.addObject("Red A0", redA0);
 		chooser.addObject("Red A1", redA1);
-		chooser.addObject("Red A2", redA2);
-		chooser.addObject("Red A3", redA3);
+		//chooser.addObject("Red A2", redA2);
+		//chooser.addObject("Red A3", redA3);
 		chooser.addObject("Red B0", redB0);
 		chooser.addDefault("Red B1", redB1); //Default
-		chooser.addObject("Red B2", redB2);
-		chooser.addObject("Red B3", redB3);
+		//chooser.addObject("Red B2", redB2);
+		//chooser.addObject("Red B3", redB3);
 		chooser.addObject("Red C0", redC0);
 		chooser.addObject("Red C1", redC1);
-		chooser.addObject("Red C2", redC2);
-		chooser.addObject("Red C3", redC3);
+		//chooser.addObject("Red C2", redC2);
+		//chooser.addObject("Red C3", redC3);
 		
 		chooser.addObject("Blue C1", blueC1);
 		SmartDashboard.putData("Auto choices", chooser);
@@ -223,22 +223,18 @@ public class Robot extends IterativeRobot {
 
 	}
 	
-	private void autoRedB1(){ //Tested ok~
+	private void autoRedB1(){
 		autoBGear();
-		autoTurn(-80);
-		autoMove(1f, 2f);
-		autoTurn(80);
-		autoMove(1f, 4f);
 		
 		autoEnd();
 	}
 	
 	private void autoRedB2(){
 		autoBGear();
-		autoTurn(-90);
-		autoMove(0.7f, 1.5f);
-		autoTurn(90);
-		autoMove(0.7f, 4f);
+		autoTurn(-80);
+		autoMove(1f, 2f);
+		autoTurn(80);
+		autoMove(1f, 4f);
 		
 		autoEnd();
 	}
@@ -301,7 +297,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	private void autoAGear(){
-		autoMove(0.85f, 2.3f);
+		autoMove(0.85f, 2.2f);
 		autoTurn(60);
 		autoAdjustAngle();
 		autoDeliverSideGear();
@@ -326,7 +322,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void autoCGear(){
-		autoMove(0.85f, 2.3f);
+		autoMove(0.85f, 2.2f);
 		autoTurn(-65);
 		autoAdjustAngle();
 		autoDeliverSideGear();
@@ -359,6 +355,8 @@ public class Robot extends IterativeRobot {
 				autoTurn(adjustValue - 2);
 			}
 		}
+
+		drive.tankDrive(0f, 0f);
 	}
 
 	private void autoDeliverSideGear(){
@@ -590,21 +588,20 @@ public class Robot extends IterativeRobot {
 			ballShelf.retry();
 		}
 		
-		//Close gear catcher (if needed)
+		//Manual gear catcher controls if needed
 		if(copilot.getButtonX()){
 			gearCatcher.close();
 		}
-		
-		//Enable the gear catcher
-		if(copilot.getButtonY()){
-			gearCatcher.enable();
-		}
-		
-		/* Uncomment this if we find we need the option
 		if(copilot.getButtonY()){
 			gearCatcher.open();
 		}
-		*/
+		if(Timer.getFPGATimestamp() - gearCatcher.getOpenTime() > 2){
+			gearCatcher.close();
+		}
+		//Enable the gear catcher
+		if(copilot.getButtonA()){
+			gearCatcher.enable();
+		}
 
 		Timer.delay(PERIODIC_DELAY);
 	}
