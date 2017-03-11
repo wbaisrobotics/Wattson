@@ -1,13 +1,11 @@
 package org.usfirst.frc.team4338.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -46,12 +44,7 @@ public class Robot extends IterativeRobot {
 	private int rightShifterHighAngle = 95;
 	private RobotDrive drive;
 
-	private BallElevator ballElevator;
-	private Shooter shooter;
 	private GearCatcher gearCatcher;
-	private Victor climber;
-	
-	private AnalogInput gearSonic;
 	
 	private boolean state = false;
 	private double lastDebounceTime = 0f;
@@ -83,12 +76,7 @@ public class Robot extends IterativeRobot {
 		drive = new RobotDrive(0, 1);
 		drive.setExpiration(0.1f);
 
-		ballElevator = new BallElevator();
-		shooter = new Shooter();
 		gearCatcher = new GearCatcher();
-		climber = new Victor(8);
-		
-		gearSonic = new AnalogInput(2); //Which channel to use?
 	}
 
 	/**
@@ -211,6 +199,12 @@ public class Robot extends IterativeRobot {
 		autoMove(0.7f, 3f);
 		autoEnd();
 	}
+
+	private void placeGear(){
+		gearCatcher.open();
+		autoMove(-0.75f, 1.25f);
+		gearCatcher.close();
+	}
 	
 	private void autoMove(double speed, double time){
 		gyro.reset();
@@ -275,10 +269,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		SmartDashboard.putNumber("gearSonic", gearSonic.getVoltage());
-		
-		if(gearCatcher.getTriggerState()){
-			deliverGear();
+		if(gearCatcher.isEnabled() && gearCatcher.getTriggerState()){
+			placeGear();
+			gearCatcher.disable();
 		}
 		
 		//Update the state
@@ -292,7 +285,6 @@ public class Robot extends IterativeRobot {
 		}
 		
 		//--------------- PILOT CONTROLS ---------------
-		//IS SOME OF THIS REDUNDENT?
 		//State switching
 		boolean toggleReading = pilot.getButtonA();
 		if(toggleReading != lastToggleState){
@@ -308,25 +300,28 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		lastToggleState = toggleReading;
-		
+
 		//Driving
 		double x = pilot.getRightJoyX();
 		x = Math.signum(x) * Math.pow(x, 2);
 		double y = pilot.getRightJoyY();
 		y = Math.signum(y) * Math.pow(y, 2);
-		
+
 		if(pilot.getLeftTrigger() > 0){ //High gear driving
 			shiftHigh();
-			x *= 0.5f; //decreased from 0.7f, was too fast turning in high gear, Maybe make this lower
+			x *= getXScale(y);
 			y *= state ? 1f : -1f;
 		} else{ //Low gear driving
 			shiftLow();
-			
+
 			if(pilot.getRightTrigger() > 0){ //Shake
 				double turn = Math.sin(20f * Timer.getFPGATimestamp());
 				//drive.tankDrive(0.7f * turn, 0.7f * -turn);
 				x = 0.7f * turn; //Use x so the wheels turn opposite
 				y = 0;
+			} else if(pilot.getButtonLB()){ //MAX low gear pushing
+				x *= 0.7f; //Maybe turn this down
+				y *= state ? 1f : -1f;
 			} else{
 				x *= 0.7f;
 				y *= state ? 0.8f : -0.8f;
@@ -334,95 +329,26 @@ public class Robot extends IterativeRobot {
 		}
 		drive.tankDrive(y - x, y + x);
 		
-		/*
-		//Gear Shifting
-		if(pilot.getLeftTrigger() > 0){
-			shiftHigh();
-		} else{
-			shiftLow();
-		}
-		
-		//Driving
-		if(pilot.getRightTrigger() > 0){ //Shake
-			double turn = Math.sin(20f * Timer.getFPGATimestamp());
-			drive.tankDrive(0.7f * turn, 0.7f * -turn);
-		} else{ //Allow for normal driving
-			double x = pilot.getRightJoyX();
-			x = 0.7f * Math.signum(x) * Math.pow(x, 2); //original: 0.8f
-			double y = pilot.getRightJoyY();
-			y = ((state) ? 0.9f : -0.9f) * Math.signum(y) * Math.pow(y, 2); //original: 0.9f
-			drive.tankDrive(y - x, y + x);
-		}
-		*/
-		
 		//--------------- COPILOT CONTROLS ---------------
-		//Ball elevator
-		if(copilot.getRightTrigger() > 0){
-			ballElevator.set(0.75f, -1f);
-		} else{
-			ballElevator.set(0f, 0f);
-		}
-		
-		//Shooting
-		if(copilot.getLeftTrigger() > 0){
-			shooter.set(-0.75f, 0f);
-			if(copilot.getButtonLB()){ //CHANGE THIS TO AUTO START WITH DELAY
-				shooter.set(-0.75f, -0.55f);
-				ballElevator.set(0f, 1f);
-			}
-		} else if(copilot.getButtonRB()){ //Ball unjamming
-			shooter.set(1f, 1f);
-		} else{
-			shooter.set(0f, 0f);
-		}
-		
-		//Shooting
-		/*
-		if(copilot.getLeftTrigger() > 0){
-			if(shooter.getWheelSpeed() == 0){
-				shooter.set(-0.82f, 0f);
-				shooter.resetStart();
-			} else if(shooter.canFeed()){
-				shooter.set(-0.82f, -0.75f);
-				ballElevator.set(0f, 1f);
-			}
-		} else{
-			shooter.setFeeder(0f);
-		}
-		if(copilot.getButtonB()){
-			shooter.set(0f, 0f);
-		}
-		if(copilot.getButtonRB()){
-			shooter.set(0.7f, 1f);
-		} else{
-			if(shooter.getWheelSpeed() < 0){ //FIX THIS
-				shooter.setFeeder(0f);
-			} else{
-				shooter.set(0f, 0f);
-			}
-		}
-		*/
-		
-		//Climber
-		if(copilot.getPOV() == Controller.POVUP){
-			climber.set(1f);
-		} else if(copilot.getPOV() == Controller.POVDOWN){
-			climber.set(-1f);
-		} else{
-			climber.set(0f);
-		}
-		
-		//Close gear catcher (if needed)
+		//Gear catcher controls
 		if(copilot.getButtonX()){
 			gearCatcher.close();
 		}
-		/* Uncomment this if we find we need the option
 		if(copilot.getButtonY()){
 			gearCatcher.open();
 		}
-		*/
+		if(Timer.getFPGATimestamp() - gearCatcher.getOpenTime() > 2){
+			gearCatcher.close();
+		}
+		if(copilot.getButtonA()){
+			gearCatcher.enable();
+		}
 
 		Timer.delay(PERIODIC_DELAY);
+	}
+
+	private double getXScale(double y){ //Logistic function to limit turning speed based on forward speed
+		return 1 - 0.5f / (1 + Math.pow(Math.E, -10 * (Math.abs(y) - 0.5f)));
 	}
 
 	private void shiftHigh(){
