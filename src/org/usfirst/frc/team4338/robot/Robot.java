@@ -253,9 +253,28 @@ public class Robot extends IterativeRobot {
 			Timer.delay(0.5f);
 			double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 			double start = Timer.getFPGATimestamp();
-			while (adjustValue == -1000 && isAutonomous()) { //Wait for target
+			while (adjustValue == -1000 && isAutonomous()) { //Search for target
+				//Look left
+				autoTurn(-10f);
 				adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-				if(Timer.getFPGATimestamp() - start > 3){ //autoStop after 3s
+				if(adjustValue != -1000){
+					break;
+				}
+				//Look right
+				autoTurn(20f);
+				adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+				if(adjustValue != -1000){
+					break;
+				}
+				//Double check center
+				autoTurn(-10f);
+				adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+				if(adjustValue != -1000){
+					break;
+				}
+
+				//Search timeout
+				if(Timer.getFPGATimestamp() - start > 5){
 					autoStop = true;
 					break;
 				}
