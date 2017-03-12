@@ -216,7 +216,9 @@ public class Robot extends IterativeRobot {
 		autoMove(0.85f, 2.2f);
 		autoTurn(60);
 		autoAdjustAngle();
-		autoDeliverGear(7f);
+		autoMove(0.7f, 0.5f);
+		autoAdjustAngle();
+		autoDeliverGear(6f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
@@ -230,7 +232,9 @@ public class Robot extends IterativeRobot {
 		autoMove(0.85f, 2.2f);
 		autoTurn(-65);
 		autoAdjustAngle();
-		autoDeliverGear(7f);
+		autoMove(0.7f, 0.5f);
+		autoAdjustAngle();
+		autoDeliverGear(6f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
