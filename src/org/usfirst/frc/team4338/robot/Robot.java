@@ -2,13 +2,7 @@ package org.usfirst.frc.team4338.robot;
 
 import com.ctre.CANTalon;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -441,13 +435,16 @@ public class Robot extends IterativeRobot {
 			shooter.setWheel(-0.75f);
 			if(copilot.getButtonLB()){ //CHANGE THIS TO AUTO START WITH DELAY
 				shooter.setFeeder(-0.55f);
+				shooter.setAgitator(0.2f);
 				ballElevator.set(0f, 1f);
 			} else{
 				shooter.setFeeder(0f);
+				shooter.setAgitator(0f);
 			}
 		} else if(copilot.getButtonRB()){ //Ball unjamming
 			shooter.setWheel(1f);
 			shooter.setFeeder(0.55f);
+			shooter.setAgitator(-0.2f);
 		} else{
 			shooter.stop();
 		}
