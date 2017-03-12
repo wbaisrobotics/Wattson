@@ -453,7 +453,6 @@ public class Robot extends IterativeRobot {
 		} else if(copilot.getButtonRB()){ //Ball unjamming
 			shooter.setWheel(1f);
 			shooter.setFeeder(0.55f);
-			shooter.setAgitator(-0.2f);
 		} else{
 			shooter.stop();
 		}
