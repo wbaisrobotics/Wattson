@@ -20,13 +20,11 @@ public class Robot extends IterativeRobot {
 	final String redA1 = "Red A1";
 	final String redB0 = "Red B0";
 	final String redB1 = "Red B1";
+	final String redB2 = "Red B2";
 	final String redC0 = "Red C0";
 	final String redC1 = "Red C1";
-	//Blue autonomous choices
-	final String blueC1 = "Blue C1";
-	//final String blueA1 = "Blue A1";
-	//final String blueB1 = "Blue B1";
-	//final String blueC1 = "Blue C1";
+	final String redC2 = "Red C2";
+	final String blueA2 = "Blue A2";
 
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
@@ -39,7 +37,8 @@ public class Robot extends IterativeRobot {
 	private Compressor compressor;
 	
 	//Gyro
-	private ADXRS450_Gyro gyro;
+	//private ADXRS450_Gyro gyro;
+	private AnalogGyro gyro;
 	private double angle;
 	private double kp = 0.03f;
 
@@ -80,10 +79,11 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Red A1", redA1);
 		chooser.addObject("Red B0", redB0);
 		chooser.addObject("Red B1", redB1);
+		chooser.addObject("Red B2", redB2);
 		chooser.addObject("Red C0", redC0);
 		chooser.addObject("Red C1", redC1);
-		
-		chooser.addObject("Blue C1", blueC1);
+		chooser.addObject("Red C2", redC2);
+		chooser.addObject("Blue A2", blueA2);
 		SmartDashboard.putData("Auto choices", chooser);
 		
 		SmartDashboard.putBoolean("state", false);
@@ -94,7 +94,8 @@ public class Robot extends IterativeRobot {
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
 		
-		gyro = new ADXRS450_Gyro();
+		//gyro = new ADXRS450_Gyro();
+		gyro = new AnalogGyro(0);
 
 		leftShifter = new DoubleSolenoid(1, 6);
 		rightShifter = new DoubleSolenoid(2, 5);
@@ -151,9 +152,11 @@ public class Robot extends IterativeRobot {
 			case redA1: autoRedA1(); break;
 			case redB0: autoRedB0(); break;
 			case redB1: autoRedB1(); break;
+			case redB2: autoRedB2(); break;
 			case redC0: autoRedC0(); break;
 			case redC1: autoRedC1(); break;
-			case blueC1: autoBlueC1(); break;
+			case redC2: autoRedC2(); break;
+			case blueA2: autoBlueA2(); break;
 			default: break;
 		}
 	}
@@ -183,7 +186,17 @@ public class Robot extends IterativeRobot {
 		autoBGear();
 		autoTurn(-80);
 		autoMove(1f, 2f);
+		autoTurn(90);
+		autoMove(1f, 4f);
+		
+		autoEnd();
+	}
+	
+	private void autoRedB2(){
+		autoBGear();
 		autoTurn(80);
+		autoMove(1f, 2.4f);
+		autoTurn(-80);
 		autoMove(1f, 4f);
 		
 		autoEnd();
@@ -203,10 +216,42 @@ public class Robot extends IterativeRobot {
 		autoEnd();
 	}
 	
-	private void autoBlueC1(){
-		autoBlueCGear();
-		autoTurn(70);
-		autoMove(1f, 4f);
+	private void autoRedC2(){
+		autoCGear();
+		autoTurn(33f);
+		autoMove(-1f, 0.8f);
+		if(!autoStop){
+			shooter.setWheel(1f);
+			Timer.delay(0.25f);
+			shooter.setWheel(-0.75f);
+			Timer.delay(1f);
+			shooter.setFeeder(-0.55f);
+			shooter.setAgitator(0.4f);
+			ballElevator.set(0f, 1f);
+			Timer.delay(6f);
+			shooter.stop();
+			ballElevator.set(0f, 0f);
+		}
+		
+		autoEnd();
+	}
+	
+	private void autoBlueA2(){
+		autoAGear();
+		autoTurn(-33f);
+		autoMove(-1f, 0.8f);
+		if(!autoStop){
+			shooter.setWheel(1f);
+			Timer.delay(0.25f);
+			shooter.setWheel(-0.75f);
+			Timer.delay(1f);
+			shooter.setFeeder(-0.55f);
+			shooter.setAgitator(0.4f);
+			ballElevator.set(0f, 1f);
+			Timer.delay(6f);
+			shooter.stop();
+			ballElevator.set(0f, 0f);
+		}
 		
 		autoEnd();
 	}
@@ -215,63 +260,104 @@ public class Robot extends IterativeRobot {
 	private void autoAGear(){
 		autoMove(0.85f, 2.2f);
 		autoTurn(60);
-		autoAdjustAngle();
-		autoMove(0.7f, 0.5f);
-		autoAdjustAngle();
-		autoDeliverGear(6f);
+		autoAdjustAngleLeft();
+		autoMove(0.7f, 0.2f);
+		autoAdjustAngleLeft();
+		autoDeliverGear(3.5f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
 	private void autoBGear(){
-		autoMove(0.7f, 1.9f);
-		//autoAdjustAngle();
+		autoMove(0.7f, 1.7f);
+		autoAdjustAngleLeft();
 		autoDeliverGear(5f);
 	}
 	
 	private void autoCGear(){
-		autoMove(0.85f, 2.2f);
-		autoTurn(-65);
-		autoAdjustAngle();
-		autoMove(0.7f, 0.5f);
-		autoAdjustAngle();
-		autoDeliverGear(6f);
+		autoMove(0.85f, 2f);
+		autoTurn(-60);
+		autoAdjustAngleRight();
+		autoMove(0.7f, 0.2f);
+		autoAdjustAngleRight();
+		autoDeliverGear(3.5f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
-	private void autoBlueCGear(){
-		autoMove(0.85f, 2.4f);
-		autoTurn(-65);
-		autoAdjustAngle();
-		autoDeliverGear(7f);
-		autoMove(-0.75f, 0.5f);
-	}
-	
-	private void autoAdjustAngle(){
+	private void autoAdjustAngleRight(){
+		SmartDashboard.putBoolean("targetFound", false);
 		if(!autoStop) {
 			Timer.delay(0.5f);
 			double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 
 			if(adjustValue == -1000){ //Search for target
 				for(int i = 0; i < 3; i++){
-					autoTurn(-3f);
+					autoTurn(10f);
+					Timer.delay(0.5f);
 					adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 					if(adjustValue != -1000){
+						SmartDashboard.putBoolean("targetFound", true);
 						break;
 					}
 				}
 				if(adjustValue == -1000){
-					autoTurn(9f);
+					autoTurn(-25f);
 					for(int i = 0; i < 3; i++){
-						autoTurn(3f);
+						autoTurn(-10f);
+						Timer.delay(0.5f);
 						adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 						if(adjustValue != -1000){
+							SmartDashboard.putBoolean("targetFound", true);
 							break;
 						}
 					}
 				}
 			}
 			if(adjustValue == -1000){
-				autoTurn(-9f);
+				//autoTurn(-9f);
+				autoStop = true;
+			}
+
+			if (adjustValue > 0) {
+				autoTurn(adjustValue + 2);
+			} else if (adjustValue < 0) {
+				autoTurn(adjustValue - 2);
+			}
+		}
+
+		drive.tankDrive(0f, 0f);
+	}
+	
+	private void autoAdjustAngleLeft(){
+		SmartDashboard.putBoolean("targetFound", false);
+		if(!autoStop) {
+			Timer.delay(0.5f);
+			double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+
+			if(adjustValue == -1000){ //Search for target
+				for(int i = 0; i < 3; i++){
+					autoTurn(-10f);
+					Timer.delay(0.5f);
+					adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+					if(adjustValue != -1000){
+						SmartDashboard.putBoolean("targetFound", true);
+						break;
+					}
+				}
+				if(adjustValue == -1000){
+					autoTurn(25f);
+					for(int i = 0; i < 3; i++){
+						autoTurn(10f);
+						Timer.delay(0.5f);
+						adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+						if(adjustValue != -1000){
+							SmartDashboard.putBoolean("targetFound", true);
+							break;
+						}
+					}
+				}
+			}
+			if(adjustValue == -1000){
+				//autoTurn(-9f);
 				autoStop = true;
 			}
 
@@ -321,6 +407,7 @@ public class Robot extends IterativeRobot {
 
 			while(Timer.getFPGATimestamp() - start < time){
 				angle = gyro.getAngle();
+				SmartDashboard.putNumber("angle", angle);
 				//y + x, y - x
 				drive.tankDrive(speed + angle * kp, speed - angle * kp);
 				Timer.delay(PERIODIC_DELAY);
@@ -371,6 +458,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		SmartDashboard.putNumber("angle", gyro.getAngle());
+		
 		if(gearCatcher.isEnabled() && gearCatcher.getTriggerState()){
 			placeGear();
 			gearCatcher.disable();
@@ -444,7 +533,7 @@ public class Robot extends IterativeRobot {
 			shooter.setWheel(-0.75f);
 			if(copilot.getButtonLB()){ //CHANGE THIS TO AUTO START WITH DELAY
 				shooter.setFeeder(-0.55f);
-				shooter.setAgitator(0.2f);
+				shooter.setAgitator(0.4f);
 				ballElevator.set(0f, 1f);
 			} else{
 				shooter.setFeeder(0f);
@@ -521,7 +610,7 @@ public class Robot extends IterativeRobot {
 		leftShifter.set(DoubleSolenoid.Value.kReverse);
 		rightShifter.set(DoubleSolenoid.Value.kReverse);
 	}
-
+	
 	/**
 	 * This function is called periodically during test mode
 	 */
