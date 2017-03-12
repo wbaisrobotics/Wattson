@@ -248,21 +248,26 @@ public class Robot extends IterativeRobot {
 			double adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
 
 			if(adjustValue == -1000){ //Search for target
-				//Look left
-				autoTurn(-10f);
-				adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-				if(adjustValue == -1000){
-					//Look right
-					autoTurn(20f);
+				for(int i = 0; i < 3; i++){
+					autoTurn(-3f);
 					adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
-					if(adjustValue == -1000){
-						//Double check center
-						autoTurn(-10f);
+					if(adjustValue != -1000){
+						break;
+					}
+				}
+				if(adjustValue == -1000){
+					autoTurn(9f);
+					for(int i = 0; i < 3; i++){
+						autoTurn(3f);
 						adjustValue = SmartDashboard.getNumber("adjustValue", -1000);
+						if(adjustValue != -1000){
+							break;
+						}
 					}
 				}
 			}
-			if(adjustValue == -1000){ //Stop auto if target not found
+			if(adjustValue == -1000){
+				autoTurn(-9f);
 				autoStop = true;
 			}
 
