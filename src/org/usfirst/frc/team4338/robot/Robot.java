@@ -37,8 +37,8 @@ public class Robot extends IterativeRobot {
 	private Compressor compressor;
 	
 	//Gyro
-	//private ADXRS450_Gyro gyro;
-	private AnalogGyro gyro;
+	private ADXRS450_Gyro gyro;
+	//private AnalogGyro gyro;
 	private double angle;
 	private double kp = 0.03f;
 
@@ -94,8 +94,8 @@ public class Robot extends IterativeRobot {
 		compressor = new Compressor(0);
 		compressor.setClosedLoopControl(true);
 		
-		//gyro = new ADXRS450_Gyro();
-		gyro = new AnalogGyro(0);
+		gyro = new ADXRS450_Gyro();
+		//gyro = new AnalogGyro(0);
 
 		leftShifter = new DoubleSolenoid(1, 6);
 		rightShifter = new DoubleSolenoid(2, 5);
@@ -261,9 +261,9 @@ public class Robot extends IterativeRobot {
 		autoMove(0.85f, 2.2f);
 		autoTurn(60);
 		autoAdjustAngleLeft();
-		autoMove(0.7f, 0.2f);
-		autoAdjustAngleLeft();
-		autoDeliverGear(3.5f);
+		//autoMove(0.7f, 0.2f);
+		//autoAdjustAngleLeft();
+		autoDeliverGear(5f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
@@ -277,9 +277,9 @@ public class Robot extends IterativeRobot {
 		autoMove(0.85f, 2f);
 		autoTurn(-60);
 		autoAdjustAngleRight();
-		autoMove(0.7f, 0.2f);
-		autoAdjustAngleRight();
-		autoDeliverGear(3.5f);
+		//autoMove(0.7f, 0.2f);
+		//autoAdjustAngleRight();
+		autoDeliverGear(5f);
 		autoMove(-0.75f, 0.5f);
 	}
 	
@@ -396,6 +396,7 @@ public class Robot extends IterativeRobot {
 
 	private void placeGear(){
 		gearCatcher.open();
+		Timer.delay(0.5f);
 		autoMove(-0.75f, 1.25f);
 		gearCatcher.close();
 	}
