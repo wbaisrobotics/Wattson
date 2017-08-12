@@ -1,8 +1,3 @@
-/*
-	Robot.java - The main class for the Robot, contains other components of the robot
-	Created by Aaron Shappell
-*/
-
 package org.usfirst.frc.team4338.robot;
 
 import com.ctre.CANTalon;
@@ -12,6 +7,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
+ * Robot.java - The main class for the Robot, contains other components of the robot
+ *
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
  * documentation. If you change the name of this class or the package after
