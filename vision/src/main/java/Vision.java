@@ -17,6 +17,11 @@ import java.util.ArrayList;
 
 */
 
+/**
+ * Vision.java - Handles the vision processing to look for the retrorelfective tape target on the tower.
+ *
+ * @author Aaron Shappell
+ */
 public class Vision{
 	private NetworkTable sd;
 
@@ -41,6 +46,10 @@ public class Vision{
 	
 	private boolean state = false; //False=gear, true=ball
 
+	/**
+	 * Default constructor.
+	 *
+	 */
 	public Vision(){
 		// Loads our OpenCV library. This MUST be included
 		System.loadLibrary("opencv_java310");
@@ -81,7 +90,10 @@ public class Vision{
 		cvStream = new MjpegServer("CV Server", cvStreamPort);
 		cvStream.setSource(cvSource);
 	}
-	
+
+	/**
+	 * Updates the direction state from the SmartDashboard.
+	 */
 	private void updateState(){
 		try{
 			state = sd.getBoolean("state", false); //Default to processGear
@@ -91,25 +103,40 @@ public class Vision{
 		}
 	}
 
+	/**
+	 * Manages which vision process is running based on the direction state.
+	 */
 	public void process(){
+		//Always running (change this?)
 		while(true){
+			//Update the direction state
 			updateState();
 			if(state){ //Process Boiler
+				//Set the camera stream to the ball camera
 				if(rawStream.getSource() != ballCamera){
 					rawStream.setSource(ballCamera);
 					cvSink.setSource(ballCamera);
 				}
+				//run the boiler target vision process (not done)
 				//processBoiler();
 			} else{ //Process Gear
+				//Set the camera stream to the gear camera
 				if(rawStream.getSource() != gearCamera){
 					rawStream.setSource(gearCamera);
 					cvSink.setSource(gearCamera);
 				}
+				//run the gear target vision process
 				processGear();
 			}
 		}
 	}
 
+	/**
+	 * Sorts an array of contours by area from largest to smallest.
+	 * Sorting from largest to smallest eliminates checking contours from the result of noise.
+	 *
+	 * @param contours the list of contours to sort
+	 */
 	private void sortContours(ArrayList<MatOfPoint> contours){
 		for(int i = 1; i < contours.size(); i++){
 			int j = i;
@@ -124,6 +151,10 @@ public class Vision{
 		}
 	}
 
+	/**
+	 * The gear vision process.
+	 * Searches for the gear target on the tower by looking for rectangles of the correct color and aspect ratio.
+	 */
 	public void processGear(){
 		// All Mats and Lists should be stored outside the loop to avoid allocations
 		// as they are expensive to create
@@ -179,7 +210,8 @@ public class Vision{
 					Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 					//adjustValue = (target.x + target.width / 2) - width / 2;
 					//adjustValue = -1f + (target.x + width / 2f) * 2f / width;
-					
+
+					//Calculate the adjust value
 					double r = 290f / target.height;
 					int offset = (target.x + target.width / 2) - width / 2;
 					double offsetFeet = offset * 5f / 12f / target.height;
@@ -201,23 +233,37 @@ public class Vision{
 		}
 	}
 
+	/**
+	 * Searches a list of contours for the gear target on the tower by looking for the right aspect ratios.
+	 * If a target is not found null is returned.
+	 *
+	 * @param contours list of contours to search
+	 * @return the gear target
+	 */
 	private Rect findGearTarget(ArrayList<MatOfPoint> contours){
+		//Aspect ratio to look for
 		double targetAspectRatio = 2f / 5f;
 		double foundAspectRatio;
+		//Give an error range as the aspect ratio won't be exact
 		double fudge = 0.2f;
+		//Targets
 		Rect target = null;
 		Rect left = null;
 		Rect right = null;
 
+		//Iterate through contour list
 		for(MatOfPoint contour : contours){
+			//Get bounding rect of the current contour
 			Rect temp = Imgproc.boundingRect(contour);
+			//Calculate its aspect ratio
 			foundAspectRatio = (double) temp.width / (double) temp.height;
+			//Check if it is a correct aspect ratio
 			if(foundAspectRatio < targetAspectRatio * (1f + fudge) && foundAspectRatio > targetAspectRatio * (1f - fudge)){
-				if(left == null){
+				if(left == null){ //If no left tape has been found save the left one
 					left = temp;
-				} else if(right == null){
+				} else if(right == null){ //if no right tape has been found save the right one
 					right = temp;
-				} else{
+				} else{ //Once both tapes have been found stop searching
 					break;
 				}
 			}
@@ -231,7 +277,10 @@ public class Vision{
 		return target;
 	}
 
-	/*
+	/**
+	 * The boiler vision process.
+	 * Searches for the boiler target by looking for rectangles of the correct color and aspect ratio.
+	 */
 	public void processBoiler(){
 		Mat frame = new Mat();
 		Mat hsv = new Mat();
@@ -255,11 +304,7 @@ public class Vision{
 			// Grab a frame. If it has a frame time of 0, there was an error.
 			// Just skip and continue
 			long frameTime = cvSink.grabFrame(frame);
-<<<<<<< HEAD
-			if(frameTime == 0) continue;
-=======
 			if (frameTime == 0) continue;
->>>>>>> BDriveTest
 
 			//Convert to HSV for easier filtering
 			Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_BGR2HSV);
@@ -282,7 +327,7 @@ public class Vision{
 
 				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
-<<<<<<< HEAD
+
 				if(target.doesExist()){ //Draw target if it exists
 					for(int i = 0; i < 4; i++){
 						//Fix this line, targetVerts out of scope!
@@ -293,13 +338,12 @@ public class Vision{
 				//Update network table with the target data
 				sd.putBoolean("targetExists", target.doesExist());
 				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
-=======
+
 				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 
 				adjustValue = (target.x + target.width / 2) - width / 2;
 				//Update network table
 				sd.putNumber("adjustValue", adjustValue);
->>>>>>> BDriveTest
 			}
 
 			//Put modified cv image on cv source to be streamed
@@ -307,7 +351,13 @@ public class Vision{
 		}
 	}
 
-	//NOT DONE
+	/**
+	 * Searches a list of contours for a boiler target.
+	 * NOT DONE OR CURRENTLY USED.
+	 *
+	 * @param contours the list of contours to search
+	 * @return the boiler target
+	 */
 	private BoilerTarget findBoilerTarget(ArrayList<MatOfPoint> contours){
 		BoilerTarget target;
 		Point[] targetVerts = new Point[4];
@@ -320,14 +370,16 @@ public class Vision{
 			//target.getAspectRatio();
 		}
 
-<<<<<<< HEAD
 		return target;
-=======
-		for(int i = first; i <= last; i++){
-			list.set(i, mergedList.get(i));
-		}
 	}
 
+	/**
+	 * Gets the largest contour of a list of contours.
+	 * NOT DONE OR CURRENTLY USED
+	 *
+	 * @param contours the list of contours to search
+	 * @return the larget contour in the list
+	 */
 	private Rect findLargestContour(ArrayList<MatOfPoint> contours){
 		double largestArea = Imgproc.contourArea(contours.get(0));
 		int largestIndex = 0;
@@ -341,9 +393,7 @@ public class Vision{
 		}
 
 		return Imgproc.boundingRect(contours.get(largestIndex));
->>>>>>> BDriveTest
 	}
-	*/
 
 	public static void main(String[] args){
 		Vision vision = new Vision();
