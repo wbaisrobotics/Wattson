@@ -1,3 +1,5 @@
+package vision
+
 ext.ntcoreDep = { ->
     def classifier
     if (buildType == "windows") {

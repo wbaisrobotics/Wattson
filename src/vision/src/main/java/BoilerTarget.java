@@ -1,3 +1,5 @@
+package vision.src.main.java;
+
 import org.opencv.core.*;
 
 /**

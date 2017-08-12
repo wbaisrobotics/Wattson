@@ -1,3 +1,4 @@
+package vision
 // Do not mess with the following 6 lines
 plugins {
   id 'com.github.johnrengelman.shadow' version '1.2.4'

@@ -1,3 +1,5 @@
+package vision.src.main.java;
+
 import edu.wpi.first.wpilibj.networktables.*;
 import edu.wpi.first.wpilibj.tables.*;
 import edu.wpi.cscore.*;
@@ -280,6 +282,8 @@ public class Vision{
 	/**
 	 * The boiler vision process.
 	 * Searches for the boiler target by looking for rectangles of the correct color and aspect ratio.
+	 *
+	 * NOT DONE OR CURRENTLY USED.
 	 */
 	public void processBoiler(){
 		Mat frame = new Mat();
@@ -321,29 +325,31 @@ public class Vision{
 			//Find target
 			if(contours.size() > 0){
 				//Merge sort the contours
-				sortContours(contours, 0, contours.size() - 1);
+				sortContours(contours);
 				//Find the matching target
 				target = findBoilerTarget(contours);
 
 				//Draw findings
 				Imgproc.drawContours(hsv, contours, -1, contourColor);
 
+				/*
 				if(target.doesExist()){ //Draw target if it exists
 					for(int i = 0; i < 4; i++){
 						//Fix this line, targetVerts out of scope!
 						Imgproc.line(hsv, targetVerts[i], targetVerts[(i + 1) % 4], target.getColor());
 					}
 				}
+				*/
 
 				//Update network table with the target data
 				sd.putBoolean("targetExists", target.doesExist());
 				sd.putNumber("adjustValue", target.getNormalizedHorizontalOffset(width));
 
-				Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
+				//Imgproc.rectangle(hsv, new Point(target.x, target.y), new Point(target.x + target.width, target.y + target.height), targetColor);
 
-				adjustValue = (target.x + target.width / 2) - width / 2;
+				//adjustValue = (target.x + target.width / 2) - width / 2;
 				//Update network table
-				sd.putNumber("adjustValue", adjustValue);
+				//sd.putNumber("adjustValue", adjustValue);
 			}
 
 			//Put modified cv image on cv source to be streamed
@@ -359,7 +365,7 @@ public class Vision{
 	 * @return the boiler target
 	 */
 	private BoilerTarget findBoilerTarget(ArrayList<MatOfPoint> contours){
-		BoilerTarget target;
+		BoilerTarget target = new BoilerTarget();
 		Point[] targetVerts = new Point[4];
 		double targetRatio = 3.75f; //15in / 4in
 		double fudge = 0.1f; //Maybe ~10% uncertainty
