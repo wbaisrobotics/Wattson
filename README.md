@@ -9,6 +9,7 @@ To compile import the cloned Robot2017 folder as a java project and deploy via F
 The code for vision processing on the raspberrypi can be found in the vision directory.
 It also contains the necessary gradle scripts to build from source.
 
-Last years robot can be found [here](https://github.com/AIS-Robotics/Robot2016)
+### Docs
+The JavaDoc documentation is in the docs directory and can be viewed [here](https://wbaisrobotics.github.io/Robot2017/).
 
 ~[@aaronshappell](https://github.com/aaronshappell)
