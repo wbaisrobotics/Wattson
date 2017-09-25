@@ -635,7 +635,7 @@ public class Robot extends IterativeRobot {
 				y *= state ? 0.8f : -0.8f;
 			}
 		}
-		drive.tankDrive(y - x, y + x);
+		drive.tankDrive((y - x)*0.3, (y + x)*0.3); // Additional 0.3 to limit speed in demos
 		
 		//--------------- COPILOT CONTROLS ---------------
 		//Ball elevator
