@@ -58,6 +58,7 @@ public class Robot extends IterativeRobot {
 	private CANTalon rightCAN1;
 	private CANTalon rightCAN2;
 	private RobotDrive drive;
+	private boolean highGearEnabled = false;
 
 	//Robot components
 	private BallElevator ballElevator;
@@ -615,7 +616,7 @@ public class Robot extends IterativeRobot {
 		double y = pilot.getRightJoyY();
 		y = Math.signum(y) * Math.pow(y, 2);
 		
-		if(pilot.getLeftTrigger() > 0){ //High gear driving
+		if(pilot.getLeftTrigger() > 0 && this.highGearEnabled){ //High gear driving
 			shiftHigh();
 			x *= getXScale(y);
 			y *= state ? 1f : -1f;
@@ -627,16 +628,16 @@ public class Robot extends IterativeRobot {
 				//drive.tankDrive(0.7f * turn, 0.7f * -turn);
 				x = 0.7f * turn; //Use x so the wheels turn opposite
 				y = 0;
-			} else if(pilot.getButtonLB()){ //MAX low gear pushing
+			} /*else if(pilot.getButtonLB()){ //MAX low gear pushing
 				x *= 0.7f; //Maybe turn this down
 				y *= state ? 1f : -1f;
-			} else{
+			} */else{
 				x *= 0.7f;
 				y *= state ? 0.8f : -0.8f;
 			}
 		}
-		drive.tankDrive((y - x) * 0.3, (y + x) * 0.3); //Add damper for driving demos
-		
+		drive.tankDrive((y - x), (y + x));
+		/*
 		//--------------- COPILOT CONTROLS ---------------
 		//Ball elevator
 		if(copilot.getRightTrigger() > 0){
@@ -644,7 +645,7 @@ public class Robot extends IterativeRobot {
 		} else{
 			ballElevator.set(0f, 0f);
 		}
-		
+		*/
 		//Shooting
 		if(copilot.getLeftTrigger() > 0){
 			shooter.setWheel(-0.75f);
