@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  *
- * @author Aaron Shappell
+ * @author Aaron Shappell, demo edited by Orian Leitersdorf
  */
 public class Robot extends IterativeRobot {
 
@@ -37,20 +37,12 @@ public class Robot extends IterativeRobot {
 	private RobotDrive drive;
 
 	//Robot components
-	private BallShelf ballShelf;
 	private Shooter shooter;
 	private GearCatcher gearCatcher;
 	
 	//LED relays
 	private DigitalOutput gearRelay;
 	private DigitalOutput ballRelay;
-	
-	private ADXRS450_Gyro gyro;
-	//private AnalogGyro gyro;
-	private double angle;
-	private double kp = 0.03f;
-	
-	private boolean autoStop = false;
 
 
 	/**
@@ -83,7 +75,6 @@ public class Robot extends IterativeRobot {
 		drive.setExpiration(0.1f);
 
 		//Initialize robot components
-		ballShelf = new BallShelf();
 		shooter = new Shooter();
 		gearCatcher = new GearCatcher();
 		
@@ -93,67 +84,28 @@ public class Robot extends IterativeRobot {
 		gearRelay.set(true);
 		ballRelay.set(false);
 		
-		gyro = new ADXRS450_Gyro();
 	}
-	private void autoMove(double speed, double time){
-		//Don't do anything if autoStop has been set
-		if(!autoStop){
-			gyro.reset();
-			double start = Timer.getFPGATimestamp();
 
-			//Move forward for the given amount of time
-			while(Timer.getFPGATimestamp() - start < time){
-				angle = gyro.getAngle();
-				SmartDashboard.putNumber("angle", angle);
-				//y + x, y - x
-				drive.tankDrive(speed + angle * kp, speed - angle * kp);
-				Timer.delay(PERIODIC_DELAY);
-			}
-		}
-
-		drive.tankDrive(0f, 0f);
-	}
-	/**
-	 * Places a gear on a peg and moves back.
-	 * The peg must be through the gear.
-	 */
-	private void placeGear(){
-		gearCatcher.open();
-		Timer.delay(0.5f);
-		autoMove(-0.75f, 1.25f);
-		gearCatcher.close();
-	}
-	
-	@Override
-	public void teleopInit(){
-		ballShelf.release();
-		gyro.reset();
-	}
 
 	/**
 	 * This function is called periodically during operator control
+	 * 
+	 * 	RightJoyX = X Direction Drive
+		RightJoyY = Y Direction Drive
+		RightTrigger = Shake
+		LeftTrigger = Prepare Shoot
+		LB = Start Shooting
+		X = Close Gear Catcher
+		Y = Open Gear Catcher
+	 * 
 	 */
 	@Override
 	public void teleopPeriodic() {
-		SmartDashboard.putNumber("angle", gyro.getAngle());
 		
-		if(gearCatcher.isEnabled() && gearCatcher.getTriggerState()){
-			placeGear();
-			gearCatcher.disable();
-		}
-		
-
 		gearRelay.set(true);
 		ballRelay.set(false);
 		
-		//RightJoyX = X Direction Drive
-		//RightJoyY = Y Direction Drive
-		//RightTrigger = Shake
-		//LeftTrigger = Prepare Shoot
-		//LB = `Start Shooting
-		//X = Close Gear Catcher
-		//Y = Open Gear Catcher
-		//A = Enable Gear Catcher
+
 		
 		//Driving
 		double x = pilot.getRightJoyX();
@@ -179,7 +131,7 @@ public class Robot extends IterativeRobot {
 		//Shooting
 		if(pilot.getLeftTrigger() > 0){
 			shooter.setWheel(-0.75f);
-			if(pilot.getButtonLB()){ //CHANGE THIS TO AUTO START WITH DELAY
+			if(pilot.getButtonLB()){
 				shooter.setFeeder(-0.55f);
 				shooter.setAgitator(0.4f);
 			} else{
@@ -191,19 +143,12 @@ public class Robot extends IterativeRobot {
 		}
 		
 		
-		//Manual gear catcher controls if needed
+		//Manual gear catcher controls
 		if(pilot.getButtonX()){
 			gearCatcher.close();
 		}
 		if(pilot.getButtonY()){
 			gearCatcher.open();
-		}
-		if(Timer.getFPGATimestamp() - gearCatcher.getOpenTime() > 2){
-			gearCatcher.close();
-		}
-		//Enable the gear catcher
-		if(pilot.getButtonA()){
-			gearCatcher.enable();
 		}
 
 		Timer.delay(PERIODIC_DELAY);
