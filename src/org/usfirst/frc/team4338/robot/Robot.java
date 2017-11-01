@@ -43,6 +43,8 @@ public class Robot extends IterativeRobot {
 	//LED relays
 	private DigitalOutput gearRelay;
 	private DigitalOutput ballRelay;
+	
+	private boolean allFunctionsEnabled = false;
 
 
 	/**
@@ -102,6 +104,13 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
+		if (pilot.getButtonA() && pilot.getButtonB() && pilot.getButtonX()) {
+			allFunctionsEnabled = true;
+		}
+		else if (pilot.getButtonY()) {
+			allFunctionsEnabled = false;
+		}
+		
 		gearRelay.set(true);
 		ballRelay.set(false);
 		
@@ -116,7 +125,7 @@ public class Robot extends IterativeRobot {
 		shiftLow();
 			
 			
-		if(pilot.getRightTrigger() > 0){ //Shake
+		if(pilot.getRightTrigger() > 0 && allFunctionsEnabled){ //Shake
 				double turn = Math.sin(20f * Timer.getFPGATimestamp());
 				//drive.tankDrive(0.7f * turn, 0.7f * -turn);
 				x = 0.7f * turn; //Use x so the wheels turn opposite
@@ -129,11 +138,13 @@ public class Robot extends IterativeRobot {
 		drive.tankDrive((y - x), (y + x));
 		
 		//Shooting
-		if(pilot.getLeftTrigger() > 0){
+		if(pilot.getLeftTrigger() > 0 && allFunctionsEnabled){
 			shooter.setWheel(-0.75f);
 			if(pilot.getButtonLB()){
 				shooter.setFeeder(-0.55f);
-				shooter.setAgitator(0.4f);
+				if(pilot.getButtonX()) {
+					shooter.setAgitator(-0.4f);
+				}
 			} else{
 				shooter.setFeeder(0f);
 				shooter.setAgitator(0f);
@@ -144,10 +155,10 @@ public class Robot extends IterativeRobot {
 		
 		
 		//Manual gear catcher controls
-		if(pilot.getButtonX()){
+		if(pilot.getButtonX() && allFunctionsEnabled){
 			gearCatcher.close();
 		}
-		if(pilot.getButtonY()){
+		if(pilot.getButtonY() && allFunctionsEnabled){
 			gearCatcher.open();
 		}
 

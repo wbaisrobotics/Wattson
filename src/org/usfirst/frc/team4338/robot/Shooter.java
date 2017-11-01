@@ -23,7 +23,7 @@ public class Shooter{
     public Shooter(){
         wheel = new Victor(3);
         feeder = new Victor(4);
-        agitator = new CANTalon(5);
+        agitator = new CANTalon(6);
     }
 
     /**
