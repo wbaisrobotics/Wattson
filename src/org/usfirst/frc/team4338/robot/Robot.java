@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  *
- * @author Aaron Shappell, edited by Orian Leitersdorf
+ * @author Aaron Shappell, edited/rewritten by Orian Leitersdorf
  */
 public class Robot extends IterativeRobot {
 
@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot {
 
 	//Gyro
 	private ADXRS450_Gyro gyro;
-	private double kp = 0.03f;
+	//private double kp = 0.03f;
 
 	//Speed controllers, Servos
 
@@ -44,6 +44,7 @@ public class Robot extends IterativeRobot {
 
 	private Servo servo5; /** Ball Shelf Left Pin **/
 	private Servo servo6; /** Ball Shelf Right Pin **/
+	private Servo servo8; /** Camera Mounted **/
 
 	private CANTalon canTalon1; /** Left Drive 1 **/
 	private CANTalon canTalon2; /** Left Drive 2 **/
@@ -86,7 +87,6 @@ public class Robot extends IterativeRobot {
 	private boolean autoStop = false;
 
 
-
 	/**Teleoperated*/
 
 	//Controllers
@@ -125,6 +125,7 @@ public class Robot extends IterativeRobot {
 
 		servo5 = new Servo (5);
 		servo6 = new Servo (6);
+		servo8 = new Servo (8);
 		
 		input0 = new DigitalInput(0);
 		
@@ -169,18 +170,28 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		//Get selected autonomous option from the Smartdashboard
+		
 		autoSelected = chooser.getSelected();
-		// autoSelected = SmartDashboard.getString("Auto Selector",
-		// defaultAuto);
+		
 		System.out.println("Auto selected: " + autoSelected);
-
-		//Reset the autoEnd boolean
-		SmartDashboard.putBoolean("autoEnd", false);
-		//Release the ball shelf
+		
 		ballShelf.release();
-		//Reset the gyro to 0
 		gyro.reset();
+		
+		
+		/** Raspberry Pi Vision Configurations **/
+		
+		SmartDashboard.putNumber("hueLow", 75);
+		SmartDashboard.putNumber("hueHigh", 105);
+		SmartDashboard.putNumber("saturationLow", 200);
+		SmartDashboard.putNumber("saturationHigh", 255);
+		SmartDashboard.putNumber("brightnessLow", 245);
+		SmartDashboard.putNumber("brightnessHigh", 255);
+
+		SmartDashboard.putBoolean("run", true);
+		SmartDashboard.putBoolean("end", false);
+		
+		
 	}
 
 	/**
