@@ -1,46 +1,51 @@
 package org.usfirst.frc.team4338.robot;
 
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.SpeedController;
 
 /**
  * Climber.java - robot component of the climbing system to climb the rope.
  *
- * @author Aaron Shappell
+ * @author Aaron Shappell, edited by Orian Leitersdorf
  */
 public class Climber {
-    private Victor motor1;
-    private Victor motor2;
+	
+    private SpeedController firstMotor;
+    private SpeedController secondMotor;
+    
+    private static final double UP_SPEED = 1;
+    private static final double DOWN_SPEED = -1;
+    private static final double STOP_SPEED = 0;
 
     /**
      * Default constructor.
      * Initializes climbing motors.
      */
-    public Climber(){
-        motor1 = new Victor(0);
-        motor2 = new Victor(1);
+    public Climber(SpeedController firstMotor, SpeedController secondMotor){
+        this.firstMotor = firstMotor;
+        this.secondMotor = secondMotor;
     }
 
     /**
      * Sets the motors to climb up.
      */
     public void up(){
-        motor1.set(1f);
-        motor2.set(1f);
+        firstMotor.set(UP_SPEED);
+        secondMotor.set(UP_SPEED);
     }
 
     /**
      * Sets the motors to climb down.
      */
     public void down(){
-        motor1.set(-1f);
-        motor2.set(-1f);
+        firstMotor.set(DOWN_SPEED);
+        secondMotor.set(DOWN_SPEED);
     }
 
     /**
      * Stops the motors.
      */
     public void stop(){
-        motor1.set(0f);
-        motor2.set(0f);
+        firstMotor.set(STOP_SPEED);
+        secondMotor.set(STOP_SPEED);
     }
 }

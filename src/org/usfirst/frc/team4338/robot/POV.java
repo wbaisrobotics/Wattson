@@ -1,0 +1,5 @@
+package org.usfirst.frc.team4338.robot;
+
+public enum POV {
+	NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST, NOSELECTION, ERROR;
+}

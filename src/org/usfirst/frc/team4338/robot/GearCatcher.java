@@ -2,82 +2,70 @@ package org.usfirst.frc.team4338.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Timer;
 
 /**
  * GearCatcher.java - robot component for the gear catching system to catch and release gears.
  *
- * @author Aaron Shappell
+ * @author Aaron Shappell, edited by Orian Leitersdorf
  */
 public class GearCatcher{
-    private DigitalInput trigger;
-    private DoubleSolenoid pistons;
-    
-    private boolean enabled = false;
-    private double openTime = 5; //>3
 
-    /**
-     * Default constructor.
-     * Initializes the plate trigger and pistons.
-     */
-    public GearCatcher(){
-        trigger = new DigitalInput(0);
-        pistons = new DoubleSolenoid(0, 7);
-    }
+	private DigitalInput trigger;
+	private DoubleSolenoid pistons;
 
-    /**
-     * Opens the gear catcher.
-     */
-    public void open(){
-        pistons.set(DoubleSolenoid.Value.kReverse);
-        openTime = Timer.getFPGATimestamp();
-    }
+	private boolean enabled = false;
 
-    /**
-     * Closes the gear catcher.
-     */
-    public void close(){
-        pistons.set(DoubleSolenoid.Value.kForward);
-    }
+	/**
+	 * Default constructor.
+	 * Initializes the plate trigger and pistons.
+	 */
+	public GearCatcher(DoubleSolenoid pistons, DigitalInput trigger){
+		trigger = new DigitalInput(0);
+		pistons = new DoubleSolenoid(0, 7);
+	}
 
-    /**
-     * Gets the time the gear catcher has been open.
-     *
-     * @return the time since opened
-     */
-    public double getOpenTime(){
-    	return openTime;
-    }
+	/**
+	 * Opens the gear catcher.
+	 */
+	public void open(){
+		pistons.set(DoubleSolenoid.Value.kReverse);
+	}
 
-    /**
-     * Gets the state of the plate trigger.
-     *
-     * @return the plate trigger state
-     */
-    public boolean getTriggerState(){
-        return trigger.get();
-    }
+	/**
+	 * Closes the gear catcher.
+	 */
+	public void close(){
+		pistons.set(DoubleSolenoid.Value.kForward);
+	}
+	
+	/**
+	 * Enables the trigger mechanism
+	 */
+	public void enable () {
+		enabled = true;
+	}
+	
+	/**
+	 * Disables the trigger mechanism
+	 */
+	public void disable () {
+		enabled = false;
+	}
 
-    /**
-     * Gets if the gear catcher is enabled or not.
-     *
-     * @return enabled or disabled state
-     */
-    public boolean isEnabled(){
-    	return enabled;
-    }
+	/**
+	 * Periodically called, opens if trigger it hit, closes if not (only happens when enabled)
+	 */
+	public void periodic() {
+		if(enabled) {
+			if(trigger.get()) {
+				open();
+				enabled = false;
+			}
+			else {
+				close();
+			}
+		}
+	}
 
-    /**
-     * Enables the gear catcher.
-     */
-    public void enable(){
-    	enabled = true;
-    }
 
-    /**
-     * Disables the gear catcher.
-     */
-    public void disable(){
-    	enabled = false;
-    }
 }

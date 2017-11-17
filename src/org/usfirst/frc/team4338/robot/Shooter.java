@@ -1,89 +1,90 @@
 package org.usfirst.frc.team4338.robot;
 
-import com.ctre.CANTalon;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import edu.wpi.first.wpilibj.SpeedController;
 
 /**
  * Shooter.java - robot component of the shooting mechanism.
  *
- * @author Aaron Shappell
+ * @author Aaron Shappell, edited by Orian Leitersdorf
  */
 public class Shooter{
-    private Victor wheel;
-    private Victor feeder;
-    private CANTalon agitator;
-    
-    private double start;
 
-    /**
-     * Default constructor.
-     * Initializes the wheel, feeder, and agitator motors.
-     */
-    public Shooter(){
-        wheel = new Victor(3);
-        feeder = new Victor(4);
-        agitator = new CANTalon(5);
-    }
+	private Timer timer = new Timer();
 
-    /**
-     * Stops the shooting motors.
-     */
-    public void stop(){
-    	wheel.set(0f);
-    	feeder.set(0f);
-    	agitator.set(0f);
-    }
+	private SpeedController wheel;
+	private SpeedController feeder;
+	private SpeedController agitator;
 
-    /**
-     * Sets the speed of the wheel motor.
-     *
-     * @param wheelSpeed the wheel motor speed
-     */
-    public void setWheel(double wheelSpeed){
-    	wheel.set(wheelSpeed);
-    }
+	private final double SHOOTING_SPEED = -0.75;
+	private final double FEEDER_SPEED = -0.55;
+	private final double AGITATOR_SPEED = 0.4;
+	
+	private final double UNJAMMING_SHOOTING_SPEED = 1;
+	private final double UNJAMMING_FEEDER_SPEED = 0.55;
+	private final double UNJAMMING_AGITATOR_SPEED = 0;
+	
+	private final double STOP_SPEED = 0;
 
-    /**
-     * Sets the speed of the feeder motor.
-     *
-     * @param feederSpeed the feeder motor speed
-     */
-    public void setFeeder(double feederSpeed){
-    	feeder.set(feederSpeed);
-    }
+	private boolean currentlyShooting = false;
 
-    /**
-     * Sets the speed of the agitator motor.
-     *
-     * @param agitateSpeed the agitator motor speed
-     */
-    public void setAgitator(double agitateSpeed){
-        agitator.set(agitateSpeed);
-    }
+	/**
+	 * Default constructor.
+	 * Initializes the wheel, feeder, and agitator motors.
+	 */
+	public Shooter(SpeedController wheel, SpeedController feeder, SpeedController agitator){
+		this.wheel = wheel;
+		this.feeder = feeder;
+		this.agitator = agitator;
+	}
 
-    /**
-     * Gets the speed of the wheel motor.
-     *
-     * @return the wheel motor speed
-     */
-    public double getWheelSpeed(){
-    	return wheel.get();
-    }
 
-    /**
-     * Resets the time delay for shooting.
-     */
-    public void resetDelay(){
-    	start = Timer.getFPGATimestamp();
-    }
+	/**
+	 * Stops the system
+	 */
+	public void stop(){
+		wheel.set(STOP_SPEED);
+		feeder.set(STOP_SPEED);
+		agitator.set(STOP_SPEED);
+		timer.cancel();
+		currentlyShooting = false;
+	}
 
-    /**
-     * Gets whether the shooting mechanism can start feeding balls into the fly wheel.
-     *
-     * @return the feed state
-     */
-    public boolean canFeed(){
-    	return Timer.getFPGATimestamp() - start > 2f;
-    }
+	/**
+	 * Prepares the shooting system by starting the wheel, and the after a delay set here shooting will begin
+	 */
+	public void prepareShooting() {
+		if(!currentlyShooting) {
+			wheel.set(SHOOTING_SPEED);
+			timer.schedule(new TimerTask () {
+				public void run() {
+					startShooting();
+				}
+			}, 1000);
+			currentlyShooting = true;
+		}
+
+	}
+
+	/**
+	 * Starts the feeder and the agitator
+	 */
+	private void startShooting() {
+		feeder.set(FEEDER_SPEED);
+		agitator.set(AGITATOR_SPEED);
+	}
+	
+	/**
+	 * Unjams the shooter
+	 */
+	public void unjamShooter() {
+		stop();
+		wheel.set(UNJAMMING_SHOOTING_SPEED);
+		feeder.set(UNJAMMING_FEEDER_SPEED);
+		agitator.set(UNJAMMING_AGITATOR_SPEED);
+	}
+
+
 }

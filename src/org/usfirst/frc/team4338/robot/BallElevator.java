@@ -1,34 +1,44 @@
 package org.usfirst.frc.team4338.robot;
 
-import com.ctre.CANTalon;
-import edu.wpi.first.wpilibj.Victor;
+
+import edu.wpi.first.wpilibj.SpeedController;
+
 
 /**
  * BallElevator.java - robot component of the ball elevator to pick up balls from the floor
  *
- * @author Aaron Shappell
+ * @author Aaron Shappell, edited by Orian Leitersdorf
  */
 public class BallElevator{
-    private Victor sweeper;
-    private CANTalon belt;
+    private SpeedController sweeper;
+    private SpeedController belt;
+    
+    private final double SWEEPER_SPEED = 0.75;
+    private final double BELT_SPEED = -1;
+    private final double STOP_SPEED = 0;
 
     /**
      * Default constructor.
-     * Initialized sweeper and belt motors.
+     * Given sweeper and belt motors
      */
-    public BallElevator(){
-        sweeper = new Victor(2);
-        belt = new CANTalon(5);
+    public BallElevator(SpeedController sweeper, SpeedController belt){
+        this.sweeper = sweeper;
+        this.belt = belt;
     }
 
     /**
-     * Sets the speed of the sweeper and belt motors.
-     *
-     * @param sweeperSpeed the speed of the sweeper motor
-     * @param beltSpeed the speed of the belt motor
+     * Starts the ball collection process
      */
-    public void set(double sweeperSpeed, double beltSpeed){
-        sweeper.set(sweeperSpeed);
-        belt.set(beltSpeed);
+    public void start() {
+    		sweeper.set(SWEEPER_SPEED);
+    		belt.set(BELT_SPEED);
+    }
+    
+    /**
+     * Stops the ball collection process
+     */
+    public void stop() {
+    		sweeper.set(STOP_SPEED);
+    		belt.set(STOP_SPEED);
     }
 }
