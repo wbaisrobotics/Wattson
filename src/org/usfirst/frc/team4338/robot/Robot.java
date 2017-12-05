@@ -76,16 +76,13 @@ public class Robot extends IterativeRobot {
 	/**Autonomous**/
 
 	//Choices names
-	final String AUTO_CHOICE_DEFAULT = "DEFAULT";
+	private static final String AUTO_CHOICE_DEFAULT = "DEFAULT";
+	private static final String AUTO_CHOICE_FOLLOW_TAPE_TEST = "FOLLOW_TAPE_TEST";
 
 	//The currently selected autonomous mode, according to the choice's name
 	String autoSelected;
 	//The chooser that is sent to the Smart Dashboard for the auto modes
 	SendableChooser<String> chooser = new SendableChooser<>();
-
-	//Whether the robot has exited an autonomous function or not (useful for errors and preventing damage)
-	private boolean autoStop = false;
-
 
 	/**Teleoperated*/
 
@@ -106,6 +103,7 @@ public class Robot extends IterativeRobot {
 		
 		/** Autonomous Options **/
 		chooser.addDefault("Default", AUTO_CHOICE_DEFAULT); 
+		chooser.addObject("Follow Tape Test", AUTO_CHOICE_FOLLOW_TAPE_TEST);
 		SmartDashboard.putData("Auto choices", chooser);
 
 		/** Speed controllers, servos, sensors, outputs initialization **/
@@ -156,31 +154,27 @@ public class Robot extends IterativeRobot {
 		climber = new Climber(victor0, victor1);
 		
 	}
+	
+	
+	
+	/**---------------------------- Autonomous ----------------------------**/
 
+	
 	/**
-	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable
-	 * chooser code works with the Java SmartDashboard. If you prefer the
-	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-	 * getString line to get the auto name from the text box below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional comparisons to the
-	 * switch structure below with additional strings. If using the
-	 * SendableChooser make sure to add them to the chooser code above as well.
+	 * Called in the beginning of autonomous it prepares the robot and the raspberry pi
 	 */
-	@Override
 	public void autonomousInit() {
 		
-		autoSelected = chooser.getSelected();
+		autoSelected = chooser.getSelected(); //Retrieves the selected mode
 		
 		System.out.println("Auto selected: " + autoSelected);
 		
 		ballShelf.release();
 		gyro.reset();
 		
-		
 		/** Raspberry Pi Vision Configurations **/
 		
+		/* Values for the color filtering */
 		SmartDashboard.putNumber("hueLow", 75);
 		SmartDashboard.putNumber("hueHigh", 105);
 		SmartDashboard.putNumber("saturationLow", 200);
@@ -188,6 +182,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("brightnessLow", 245);
 		SmartDashboard.putNumber("brightnessHigh", 255);
 
+		/* Tells Raspberry Pi to start processing */
 		SmartDashboard.putBoolean("run", true);
 		SmartDashboard.putBoolean("end", false);
 		
@@ -197,14 +192,30 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during autonomous.
 	 */
-	@Override
 	public void autonomousPeriodic() {
-		//Run the selected autonomous method
-		switch (autoSelected) {
-		default: break;
+		if (autoSelected.equals(AUTO_CHOICE_FOLLOW_TAPE_TEST)) {
+			followTapePeriodic();
+		}
+		else if (autoSelected.equals(AUTO_CHOICE_DEFAULT)) {
+			
+		}
+		else {
+			System.out.println("Error in finding autonomous mode");
 		}
 	}
 
+	/**
+	 * Should be called periodically when the robot wants to follow tape (Currently only testing)
+	 */
+	private void followTapePeriodic () {
+		
+	}
+	
+	
+	
+	/**---------------------------- Teleoperated ----------------------------**/
+	
+	
 
 	@Override
 	public void teleopInit(){
